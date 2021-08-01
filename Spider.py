@@ -1,9 +1,11 @@
+import re
 import scrapy
 from scrapy.crawler import CrawlerProcess
 import sys
 import logging
 import json
 from scrapy.http.response.html import HtmlResponse
+import pandas
 
 
 class spiderForAttendance(scrapy.Spider):
@@ -20,6 +22,8 @@ class spiderForAttendance(scrapy.Spider):
     data :dict
     data={}
     returnJson={}
+    semester=1
+    end=False
 
 
     def __init__(self,u='u',p='p'):
@@ -44,6 +48,29 @@ class spiderForAttendance(scrapy.Spider):
         yield scrapy.FormRequest(url=self.attendanceSite,formdata=self.data,callback=self.gotoSemMarksPage)
 
 
+    def roman(self,semester,increment=True):
+        sem=""
+        if(semester==9):
+            self.end=True
+        elif(semester<=3):
+            sem+="I"*semester
+        elif(semester>3):
+            sem=("I"*(5-semester) + "V" + ("I"*(semester-5)))
+        if(increment):
+            self.semester+=1
+        return sem
+
+
+
+    def hasThisSemester(self,response:HtmlResponse):
+        if(f"{self.roman(self.semester,increment=False)} SEMESTER" in str(response.body)):
+            return True
+        else:
+            return False
+
+
+
+
     def getBasicData(self,response,reset=False):
         self.data={} if reset else self.data
         self.__VIEWSTATEGENERATOR=response.css('input[name="__VIEWSTATEGENERATOR"]::attr(value)').extract_first()
@@ -65,23 +92,27 @@ class spiderForAttendance(scrapy.Spider):
 
     def gotoSemMarksPage(self,response : HtmlResponse):
         self.attendanceDetails(response)
-        #TODO get it into a json
         yield scrapy.FormRequest(method='GET',url='https://www.gandhionline.in/BEESERP/StudentLogin/Student/OverallMarksSemwise.aspx',callback=self.getMarks)
-        
 
-    def getMarks(self,response : HtmlResponse):
-        self.percentageDetails(response)
+   
+   
+    def getThisSemMarks(self,response: HtmlResponse,semester):
         self.getBasicData(response,reset=True)
         self.data.pop("__EVENTVALIDATION")
         crystalState=response.css('input[name="__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1"]::attr(value)').extract_first()
-        self.data.update({'ctl00$cpStud$btn1' : 'I SEMESTER','__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1':crystalState})
-        yield scrapy.FormRequest(url=r'https://www.gandhionline.in/BEESERP/StudentLogin/Student/OverallMarksSemwise.aspx',formdata=self.data,callback=self.sem1Marks)
+        self.data.update({f'ctl00$cpStud$btn{semester}' : f'{self.roman(semester)} SEMESTER','__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1':crystalState})
+        yield scrapy.FormRequest(url=r'https://www.gandhionline.in/BEESERP/StudentLogin/Student/OverallMarksSemwise.aspx',formdata=self.data,callback=self.getMarks)
 
+   
+   
+    def getMarks(self,response : HtmlResponse):
+        if(self.semester>1):
+            {self.semester:self.percentageDetails(response)}
 
+        if(not self.hasThisSemester(response)):
+            return 
 
-    def sem1Marks(self,response):
-        self.showOutHtml(response)
-        pass
+        return self.getThisSemMarks(response,self.semester)
 
 
 
@@ -91,14 +122,19 @@ class spiderForAttendance(scrapy.Spider):
 
     def attendanceDetails(self,response : HtmlResponse):
         att=response.xpath('//*[@id="ctl00_cpStud_lblTotalPercentage"]/b/font').extract_first()
-        print(att)
         self.att=float(att[att.index('>')+1:att.index('%')])
         print('\n\n\n\n\n\n YOUR ATTENDANCE IS: ',self.att,'\n\n\n\n\n\n')
 
 
 
     def percentageDetails(self,response : HtmlResponse):
-        pass
+        table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSemwise"]').extract()))[0]
+        table['FinalGrade']=table['Unnamed: 7']
+        table['Credits']=table['Unnamed: 8']
+        table['Status']=table['Unnamed: 9']
+        table.drop(['Unnamed: 7','Unnamed: 8','Unnamed: 9'],axis=1,inplace=True)
+        return table.to_json()
+        
 
 
 
