@@ -106,10 +106,11 @@ class spiderForAttendance(scrapy.Spider):
    
     def getMarks(self,response : HtmlResponse):
         if(self.semester>1):
-            self.returnJson.update({self.semester:self.percentageDetails(response)})
+            self.returnJson.update({f"{self.semester} semester":self.percentageDetails(response)})
 
         if(not self.hasThisSemester(response)):
-            return self.returnJson
+            print(json.dumps(self.returnJson,indent=4,allow_nan=True))
+            return 
 
         return self.getThisSemMarks(response,self.semester)
 
