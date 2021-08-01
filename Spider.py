@@ -44,7 +44,6 @@ class spiderForAttendance(scrapy.Spider):
     def loginWithPassword(self,response : HtmlResponse):
         self.getBasicData(response)
         self.data.update({'txtPassword' : self.txtPassword,'btnSubmit' : self.btnSubmit})
-        print('__REACHED__')
         yield scrapy.FormRequest(url=self.attendanceSite,formdata=self.data,callback=self.gotoSemMarksPage)
 
 
@@ -107,10 +106,10 @@ class spiderForAttendance(scrapy.Spider):
    
     def getMarks(self,response : HtmlResponse):
         if(self.semester>1):
-            {self.semester:self.percentageDetails(response)}
+            self.returnJson.update({self.semester:self.percentageDetails(response)})
 
         if(not self.hasThisSemester(response)):
-            return 
+            return self.returnJson
 
         return self.getThisSemMarks(response,self.semester)
 
@@ -121,9 +120,15 @@ class spiderForAttendance(scrapy.Spider):
 
 
     def attendanceDetails(self,response : HtmlResponse):
-        att=response.xpath('//*[@id="ctl00_cpStud_lblTotalPercentage"]/b/font').extract_first()
-        self.att=float(att[att.index('>')+1:att.index('%')])
-        print('\n\n\n\n\n\n YOUR ATTENDANCE IS: ',self.att,'\n\n\n\n\n\n')
+        table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSubject"]').extract()))[0]
+        att=table.iloc[-1,-1]
+        table.drop(7,inplace=True,axis=0)
+        att={'Total':att,'Details':table.to_dict()}
+        table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]').extract()))[0]
+        att['Daywise']=table.to_dict()
+        self.returnJson.update({'attendance':att})
+        
+        
 
 
 
@@ -133,7 +138,12 @@ class spiderForAttendance(scrapy.Spider):
         table['Credits']=table['Unnamed: 8']
         table['Status']=table['Unnamed: 9']
         table.drop(['Unnamed: 7','Unnamed: 8','Unnamed: 9'],axis=1,inplace=True)
-        return table.to_json()
+        sgpa=response.xpath(r'//*[@id="ctl00_cpStud_lblSemSGPA"]').extract()[0]
+        sgpa=(sgpa.split("</font>")[-2]).split(" ")[-1]
+        
+        cgpa=response.xpath(r'//*[@id="ctl00_cpStud_lblSemCGPA"]').extract()[0]
+        cgpa=(cgpa.split("</font>")[-2]).split(" ")[-1]
+        return {'CGPA':float(cgpa),'SGPA':float(sgpa),'details':table.to_dict()}
         
 
 
@@ -145,7 +155,6 @@ class spiderForAttendance(scrapy.Spider):
 
 
 if(len(sys.argv)>=3 and sys.argv[0].lower()!='runspider'):
-    print(sys.argv[0])
     txtUserName=sys.argv[1]
     txtPassword=sys.argv[2]
 
