@@ -1,0 +1,15 @@
+README.md
+setup.py
+ErpCrawler/__init__.py
+ErpCrawler/items.py
+ErpCrawler/middlewares.py
+ErpCrawler/pipelines.py
+ErpCrawler/settings.py
+ErpCrawler/spiders/__init__.py
+ErpCrawler/spiders/erpCrawler.py
+ErpCrawler/spiders/example.py
+project.egg-info/PKG-INFO
+project.egg-info/SOURCES.txt
+project.egg-info/dependency_links.txt
+project.egg-info/entry_points.txt
+project.egg-info/top_level.txt
