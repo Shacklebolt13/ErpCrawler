@@ -1,8 +1,6 @@
 import scrapy
-import json
 from scrapy.http.response.html import HtmlResponse
 import pandas
-from ErpCrawler import items
 
 
 class ErpCrawler(scrapy.Spider):
@@ -24,14 +22,16 @@ class ErpCrawler(scrapy.Spider):
     end=False
 
 
-    def __init__(self,u='u',p='p'):
-        self.txtUserName=u
-        self.txtPassword=p
+    def __init__(self,**kwargs):
+        self.txtUserName=kwargs['u']
+        self.txtPassword=kwargs['p']
+        print("GOT TO INIT")
         super(ErpCrawler,self).__init__()
 
 
     def start_requests(self):
-        yield scrapy.FormRequest(url=self.start_urls[0], callback=self.parse)
+        print(self.txtUserName,self.txtPassword)
+        yield scrapy.Request(url=self.start_urls[0], callback=self.parse)
 
 
 
@@ -110,7 +110,7 @@ class ErpCrawler(scrapy.Spider):
             self.returnJson.update({f"{self.semester-1} semester":self.percentageDetails(response)})
 
         if(not self.hasThisSemester(response)):
-            return items.ErpcrawlerItem.createOne(self.returnJson)
+            return self.returnJson
             
         return self.getThisSemMarks(response,self.semester)
 

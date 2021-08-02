@@ -2,5 +2,6 @@
     "files.watcherExclude": {
         "**/venv/**": true
     },
-    "jupyter.jupyterServerType": "local"
+    "jupyter.jupyterServerType": "local",
+    "python.pythonPath": "venv/bin/python"
 }
