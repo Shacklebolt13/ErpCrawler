@@ -1,1 +1,1 @@
-web: gunicorn ErpCrawler.wsgi:application
+web: gunicorn ErpCrawler.wsgi
