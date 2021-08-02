@@ -1,5 +1,5 @@
 venv
 venv/*
-
+out.json
 __pycache__
 */__pycache__
