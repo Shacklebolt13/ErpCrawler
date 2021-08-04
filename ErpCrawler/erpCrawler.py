@@ -135,7 +135,7 @@ class ErpCrawler(scrapy.Spider):
         att={'Total':att,'Details':table.to_dict()}
         table="".join(response.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]').extract())
         table=table.replace("\t","")
-        table=table.replace(r"\",r"\\")
+        table=table.replace(r"\",r'\\')
         table=table.replace("\n","")
         table=table.replace(r'"',r'\"')
         table=table.replace("\r","")
