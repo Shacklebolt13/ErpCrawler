@@ -133,9 +133,8 @@ class ErpCrawler(scrapy.Spider):
         table.drop(7,inplace=True,axis=0)
         table=self.handleNaN(table)
         att={'Total':att,'Details':table.to_dict()}
-        table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]').extract()))[0]
-        table=self.handleNaN(table)
-        att['Daywise']=table.to_dict()
+        table="".join(response.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]').extract())
+        att['Daywise']=table
         self.returnJson.update({'attendance':att})
         
         
