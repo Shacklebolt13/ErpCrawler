@@ -130,7 +130,7 @@ class ErpCrawler(scrapy.Spider):
     def attendanceDetails(self,response : HtmlResponse):
         table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSubject"]').extract()))[0]
         att=table.iloc[-1,-1]
-        table.drop(len(table.iloc[:,0])-1,inplace=True,axis=0)
+        df.drop(df.tail(1).index,inplace=True)
         table=self.handleNaN(table)
         att={'Total':att,'Details':table.to_dict()}
         table="".join(response.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]').extract())
