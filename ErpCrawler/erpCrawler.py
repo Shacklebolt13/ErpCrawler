@@ -117,7 +117,13 @@ class ErpCrawler(scrapy.Spider):
 
 
 
-
+    def handleNaN(self,table):
+            for col in table.columns:
+                if(table[col].dtype=="object"):
+                    table[col]=table[col].fillna('0')
+                else:
+                    table[col]=table[col].fillna(0)
+            return table
 
 
 
@@ -125,8 +131,10 @@ class ErpCrawler(scrapy.Spider):
         table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSubject"]').extract()))[0]
         att=table.iloc[-1,-1]
         table.drop(7,inplace=True,axis=0)
+        table=self.handleNaN(table)
         att={'Total':att,'Details':table.to_dict()}
         table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]').extract()))[0]
+        table=self.handleNaN(table)
         att['Daywise']=table.to_dict()
         self.returnJson.update({'attendance':att})
         
@@ -140,6 +148,7 @@ class ErpCrawler(scrapy.Spider):
         table['Credits']=table['Unnamed: 8']
         table['Status']=table['Unnamed: 9']
         table.drop(['Unnamed: 7','Unnamed: 8','Unnamed: 9'],axis=1,inplace=True)
+        table=self.handleNaN(table)
         sgpa=response.xpath(r'//*[@id="ctl00_cpStud_lblSemSGPA"]').extract()[0]
         sgpa=(sgpa.split("</font>")[-2]).split(" ")[-1]
         
