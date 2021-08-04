@@ -14,4 +14,4 @@ def runScraper(request: HttpRequest):
     process=Processor(settings=None)
     ans=process.run(getRes)
     
-    return HttpResponse(json.dumps(ans,indent=4))
+    return HttpResponse(json.dumps(ans))
