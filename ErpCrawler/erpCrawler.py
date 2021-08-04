@@ -137,7 +137,7 @@ class ErpCrawler(scrapy.Spider):
         table=table.replace("\t","")
         table=table.replace("\n","")
         table=table.replace("\r","")
-        att['Daywise']=table
+        att['Daywise']=f'''{table}'''
         self.returnJson.update({'attendance':att})
         
         
