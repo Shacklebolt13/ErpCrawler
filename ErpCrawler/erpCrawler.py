@@ -130,7 +130,7 @@ class ErpCrawler(scrapy.Spider):
     def attendanceDetails(self,response : HtmlResponse):
         table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSubject"]').extract()))[0]
         att=table.iloc[-1,-1]
-        table.drop(table.tail(1).index,inplace=True)
+        table.drop(7,inplace=True,axis=0)
         table=self.handleNaN(table)
         att={'Total':att,'Details':table.to_dict()}
         table="".join(response.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]').extract())
@@ -159,13 +159,3 @@ class ErpCrawler(scrapy.Spider):
         cgpa=response.xpath(r'//*[@id="ctl00_cpStud_lblSemCGPA"]').extract()[0]
         cgpa=(cgpa.split("</font>")[-2]).split(" ")[-1]
         return {'CGPA':float(cgpa),'SGPA':float(sgpa),'details':table.to_dict()}
-        
-
-
-
-
-
-
-
-
-
