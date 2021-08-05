@@ -24,13 +24,12 @@ SECRET_KEY = 'django-insecure-mv@p77cj+$v4gb%-20=(=z)x1+t*3v0@(een5putcnejr)^jcj
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['gietwebcrawl.herokuapp.com']
+ALLOWED_HOSTS = ['gietwebcrawl.herokuapp.com','127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

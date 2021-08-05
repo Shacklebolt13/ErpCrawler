@@ -128,18 +128,14 @@ class ErpCrawler(scrapy.Spider):
 
 
     def attendanceDetails(self,response : HtmlResponse):
-        table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSubject"]').extract()))[0]
+        table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSubject"]').extract_first()))[0]
         att=table.iloc[-1,-1]
-        table.drop(7,inplace=True,axis=0)
+        table.drop(table.tail(1).index,inplace=True,axis=0)
         table=self.handleNaN(table)
         att={'Total':att,'Details':table.to_dict()}
-        table="".join(response.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]').extract())
-        table=table.replace("\t","")
-        table=table.replace("\"",'\\')
-        table=table.replace("\n","")
-        table=table.replace(r'"',r'\"')
-        table=table.replace("\r","")
-        att['Daywise']=f'''{table}'''
+        table2= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]').extract_first()))[0]
+        table2=table2.to_html()
+        att['Daywise']=table2.replace("\n","")
         self.returnJson.update({'attendance':att})
         
         
