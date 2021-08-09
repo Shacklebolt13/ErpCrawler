@@ -3,5 +3,7 @@
         "**/venv/**": true
     },
     "jupyter.jupyterServerType": "local",
-    "python.pythonPath": "venv/bin/python"
+    "python.pythonPath": "venv/bin/python",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }
