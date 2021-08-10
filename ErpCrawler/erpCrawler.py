@@ -17,10 +17,9 @@ class ErpCrawler(scrapy.Spider):
     start_urls=[attendanceSite]
     data :dict
     data={}
-    returnJson={}
+    returnJson={'cookie':[]}
     semester=1
     end=False
-
 
     def __init__(self,**kwargs):
         self.txtUserName=kwargs['u']
@@ -37,6 +36,8 @@ class ErpCrawler(scrapy.Spider):
 
     def parse(self,response : HtmlResponse):
         self.getBasicData(response)
+        a=(response.headers.get('Set-Cookie').decode('utf-8').split(';')[0].split('='))
+        self.returnJson['cookie'].append({a[0]:a[1]})
         self.data.update({'txtUserName' : self.txtUserName,'btnNext': self.btnNext })
         yield scrapy.FormRequest(url=self.attendanceSite,formdata=self.data,callback=self.loginWithPassword)
 
@@ -92,6 +93,15 @@ class ErpCrawler(scrapy.Spider):
 
     def gotoSemMarksPage(self,response : HtmlResponse):
         self.attendanceDetails(response)
+        a=response.headers.getlist('Set-Cookie')
+        for i in a:
+            i=i.decode('utf-8')
+            i=i.split(';')[0].split('=')
+            i={i[0]:i[1]}
+            self.returnJson['cookie'].append(i)
+            
+
+        print(response.meta)
         yield self.returnJson #IMPORTANT: to limit crawling to the attendance page
         #yield scrapy.FormRequest(method='GET',url=self.marksSite,callback=self.getMarks)
 
@@ -107,10 +117,12 @@ class ErpCrawler(scrapy.Spider):
    
    
     def getMarks(self,response : HtmlResponse):
+
         if(self.semester>1):
             self.returnJson.update({f"{self.semester-1} semester":self.percentageDetails(response)})
 
         if(not self.hasThisSemester(response)):
+            
             return self.returnJson
             
         return self.getThisSemMarks(response,self.semester)

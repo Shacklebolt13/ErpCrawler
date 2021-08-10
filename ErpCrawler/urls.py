@@ -19,5 +19,6 @@ from . import views
 
 
 urlpatterns = [
-    path('getrecords',views.runScraper)
+    path('getAttrecords',views.runAttScraper),
+    path('getResrecords',views.runResScraper)
 ]

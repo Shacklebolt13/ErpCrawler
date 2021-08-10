@@ -17,12 +17,14 @@ class ResCrawler(scrapy.Spider):
     returnJson={}
     semester=1
     end=False
+    run=False
 
 
     def __init__(self,**kwargs):
         self.txtUserName=kwargs['u']
         self.txtPassword=kwargs['p']
         self.cookie=kwargs['c']
+        self.semester=kwargs['s']
         print("GOT TO INIT")
         super(ResCrawler,self).__init__()
 
@@ -30,6 +32,7 @@ class ResCrawler(scrapy.Spider):
     def start_requests(self):
         print(self.txtUserName,self.txtPassword)
         self.cookie=dict(map(lambda x : x.split('='),self.cookie.split(';')))
+        print("\nusing cookies:",self.cookie,"\n")
         yield scrapy.FormRequest(method='GET',cookies=self.cookie,url=self.marksSite,callback=self.getMarks)
 
     
@@ -47,8 +50,8 @@ class ResCrawler(scrapy.Spider):
         return sem
 
 
-    def hasThisSemester(self,response:HtmlResponse):
-        if(f"{self.roman(self.semester,increment=False)} SEMESTER" in str(response.body)):
+    def hasThisSemester(self,response:HtmlResponse,sem):
+        if(f"{self.roman(sem,increment=False)} SEMESTER" in str(response.body)):
             return True
         else:
             return False
@@ -79,18 +82,28 @@ class ResCrawler(scrapy.Spider):
         self.data.pop("__EVENTVALIDATION")
         crystalState=response.css('input[name="__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1"]::attr(value)').extract_first()
         self.data.update({f'ctl00$cpStud$btn{semester}' : f'{self.roman(semester)} SEMESTER','__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1':crystalState})
+        self.run=True
         yield scrapy.FormRequest(url=self.marksSite,formdata=self.data,callback=self.getMarks)
 
    
    
     def getMarks(self,response : HtmlResponse):
         if(self.semester>1):
-            self.returnJson.update({f"{self.semester-1} semester":self.percentageDetails(response)})
+            self.returnJson.update({f"{ self.semester-1 if self.semester==1 else self.semester   } semester":self.percentageDetails(response)})
 
-        if(not self.hasThisSemester(response)):
+        if(self.run==True):
+            self.returnJson.update({'totalSems':self.totalSems(response)})
             return self.returnJson
             
         return self.getThisSemMarks(response,self.semester)
+
+    def totalSems(self,response):
+        count=0
+        for i in range(1,9):
+            if(self.hasThisSemester(response,i)):
+                count+=1
+        return count
+
 
 
 
@@ -114,4 +127,4 @@ class ResCrawler(scrapy.Spider):
         
         cgpa=response.xpath(r'//*[@id="ctl00_cpStud_lblSemCGPA"]').extract()[0]
         cgpa=(cgpa.split("</font>")[-2]).split(" ")[-1]
-        return {'CGPA':float(cgpa),'SGPA':float(sgpa),'details':table.to_dict()}
+        return {'CGPA':cgpa,'SGPA':sgpa,'details':table.to_dict()}
