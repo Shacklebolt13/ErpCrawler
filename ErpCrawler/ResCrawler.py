@@ -33,7 +33,7 @@ class ResCrawler(scrapy.Spider):
         print(self.txtUserName,self.txtPassword)
         self.cookie=dict(map(lambda x : x.split('='),self.cookie.split(';')))
         print("\nusing cookies:",self.cookie,"\n")
-        yield scrapy.FormRequest(method='GET',cookies=self.cookie,url=self.marksSite,callback=self.getMarks)
+        yield scrapy.FormRequest(method='GET',cookies=self.cookie,url=self.marksSite,callback=self.getThisSemMarks)
 
     
 
@@ -77,25 +77,21 @@ class ResCrawler(scrapy.Spider):
 
    
    
-    def getThisSemMarks(self,response: HtmlResponse,semester):
+    def getThisSemMarks(self,response: HtmlResponse):
         self.getBasicData(response,reset=True)
         self.data.pop("__EVENTVALIDATION")
         crystalState=response.css('input[name="__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1"]::attr(value)').extract_first()
-        self.data.update({f'ctl00$cpStud$btn{semester}' : f'{self.roman(semester)} SEMESTER','__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1':crystalState})
+        self.data.update({f'ctl00$cpStud$btn{self.semester}' : f'{self.roman(self.semester)} SEMESTER','__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1':crystalState})
         self.run=True
         yield scrapy.FormRequest(url=self.marksSite,formdata=self.data,callback=self.getMarks)
 
    
    
     def getMarks(self,response : HtmlResponse):
-        if(self.semester>1):
-            self.returnJson.update({f"{ self.semester-1 if self.semester==1 else self.semester   } semester":self.percentageDetails(response)})
+        self.returnJson.update({f"{ self.semester -1} semester":self.percentageDetails(response)})
+        self.returnJson.update({'totalSems':self.totalSems(response)})
+        return self.returnJson
 
-        if(self.run==True):
-            self.returnJson.update({'totalSems':self.totalSems(response)})
-            return self.returnJson
-            
-        return self.getThisSemMarks(response,self.semester)
 
     def totalSems(self,response):
         count=0
