@@ -20,5 +20,7 @@ from . import views
 
 urlpatterns = [
     path('getAttrecords',views.runAttScraper),
-    path('getResrecords',views.runResScraper)
+    path('getResrecords',views.runResScraper),
+    path('getTTrecords',views.runTTScraper),
+    path('sendMail',views.sendMail)
 ]

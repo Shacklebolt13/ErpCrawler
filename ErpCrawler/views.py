@@ -1,3 +1,4 @@
+from ErpCrawler import ttCrawler
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from . import erpCrawler,ResCrawler
@@ -17,6 +18,18 @@ def runAttScraper(request: HttpRequest):
     return HttpResponse(json.dumps(ans))
 
 
+def runTTScraper(request: HttpRequest):
+    u=request.GET.get('username',False)
+    p=request.GET.get('password',False)
+    print(u,p)
+    if((not u) or (not p)):
+        return HttpResponseBadRequest("must pass username and password as get fields")
+    getRes=Job(ttCrawler.TTcrawler,u=u,p=p)
+    process=Processor(settings=None)
+    ans=process.run(getRes)
+    
+    return HttpResponse(json.dumps(ans))
+
 def runResScraper(request: HttpRequest):
     u=request.GET.get('username',False)
     p=request.GET.get('password',False)
@@ -29,3 +42,9 @@ def runResScraper(request: HttpRequest):
     process=Processor(settings=None)
     ans=process.run(getRes)
     return HttpResponse(json.dumps(ans))
+
+
+
+def sendMail(self,response: HtmlResponse):
+    pass
+        
