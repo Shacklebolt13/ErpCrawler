@@ -86,6 +86,6 @@ class TTcrawler(scrapy.Spider):
         table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdTimetable"]').extract_first()))[0]
         classes= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSubject"]').extract_first()))[0]
         classes=classes.iloc[-1,-3:-1].to_dict()
-        self.returnJson.update({'schedule':table.to_html(),'classDetails':classes})
+        self.returnJson.update({'schedule':table.to_json(),'classDetails':classes})
         
 
