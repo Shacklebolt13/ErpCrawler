@@ -45,6 +45,6 @@ def runResScraper(request: HttpRequest):
 
 
 
-def sendMail(self,response: HtmlResponse):
-    pass
+def sendMail(response: HttpResponse):
+    return HttpResponse("mail")
         
