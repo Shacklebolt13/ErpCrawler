@@ -1,9 +1,13 @@
+from django.http import request
 from ErpCrawler import ttCrawler
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
 from . import erpCrawler,ResCrawler
 from scrapyscript import Job,Processor
 import json
+from django.core.mail import EmailMessage
+import random
+from cryptography.fernet import Fernet
 
 def runAttScraper(request: HttpRequest):
     u=request.GET.get('username',False)
@@ -45,6 +49,19 @@ def runResScraper(request: HttpRequest):
 
 
 
-def sendMail(response: HttpResponse):
-    return HttpResponse("mail")
+def sendMail(request: HttpResponse):
+    mail=request.GET.get('mail',False)
+    if(not mail):
+        return HttpResponse('Pass mailId')
+    otp=''
+    while len(otp)<6:
+        otp+=f"{random.randint(0,9)}"
+    
+    msg=f'The Otp For Verification Of Your Email Is: {otp}'
+    print(msg)
+    #EmailMessage(subject="Otp For Verification",body=msg,to=[mail]).send()
+    key=Fernet.generate_key()
+    fernet=Fernet(key)
+    enc=fernet.encrypt(otp.encode())
+    return HttpResponse(f"{str(key,'utf-8')}{str(enc,'utf-8')}  {otp}")
         
