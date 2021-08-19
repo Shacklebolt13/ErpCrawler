@@ -1,4 +1,5 @@
 from django.http import request
+from ErpCrawler import settings
 from ErpCrawler import ttCrawler
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
@@ -50,9 +51,10 @@ def runResScraper(request: HttpRequest):
 
 
 def sendMail(request: HttpResponse):
-    mail=request.GET.get('mail',False)
+    mail=request.POST.get('mail',False)
+    key=request.POST.get('key',False)
     if(not mail):
-        return HttpResponse('Pass mailId')
+        return HttpResponse('Pass mailId and key')
     otp=''
     while len(otp)<6:
         otp+=f"{random.randint(0,9)}"
@@ -60,8 +62,10 @@ def sendMail(request: HttpResponse):
     msg=f'The Otp For Verification Of Your Email Is: {otp}'
     print(msg)
     #EmailMessage(subject="Otp For Verification",body=msg,to=[mail]).send()
-    key=Fernet.generate_key()
+    if(key!=settings.MAIL_KEY):
+        return HttpResponse('Wrong key')
     fernet=Fernet(key)
     enc=fernet.encrypt(otp.encode())
-    return HttpResponse(f"{str(key,'utf-8')}{str(enc,'utf-8')}  {otp}")
+    frm={'encoded': f"{str(key,'utf-8')}{str(enc,'utf-8')}",'otp':f'{otp}'}
+    return HttpResponse(json.dumps(frm))
         
