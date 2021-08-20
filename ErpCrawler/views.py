@@ -8,6 +8,8 @@ import json
 import random
 from cryptography.fernet import Fernet
 from .helpers import EmailThread
+from django.views.decorators.csrf import csrf_exempt
+
 def runAttScraper(request: HttpRequest):
     u=request.GET.get('username',False)
     p=request.GET.get('password',False)
@@ -47,7 +49,7 @@ def runResScraper(request: HttpRequest):
     return HttpResponse(json.dumps(ans))
 
 
-
+@csrf_exempt
 def sendMail(request: HttpResponse):
     mail=request.POST.get('mail',False)
     key=request.POST.get('key',False)
