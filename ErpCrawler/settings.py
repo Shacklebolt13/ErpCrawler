@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from socket import *
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -123,10 +124,10 @@ print(STATIC_ROOT)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DEFAULT_FROM_EMAIL = ''
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_FROM')
+EMAIL_HOST = gethostbyname('smtp.gmail.com')
+EMAIL_HOST_USER = DEFAULT_FROM_EMAIL
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-MAIL_KEY=''
+MAIL_KEY= os.getenv('EMAIL_KEY')
