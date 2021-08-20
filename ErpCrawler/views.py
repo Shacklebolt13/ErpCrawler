@@ -53,7 +53,8 @@ def runResScraper(request: HttpRequest):
 def sendMail(request: HttpResponse):
     mail=request.POST.get('mail',False)
     key=request.POST.get('key',False)
-    if(not mail):
+    print(mail,key)
+    if(not mail or not key):
         return HttpResponse('Pass mailId and key')
     otp=''
     while len(otp)<6:

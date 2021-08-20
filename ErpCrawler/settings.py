@@ -124,10 +124,14 @@ print(STATIC_ROOT)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-DEFAULT_FROM_EMAIL = os.getenv('EMAIL_FROM')
-EMAIL_HOST = gethostbyname('smtp.gmail.com')
-EMAIL_HOST_USER = DEFAULT_FROM_EMAIL
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-MAIL_KEY= os.getenv('EMAIL_KEY')
+with open('creds.txt','r') as file:
+    lines=file.readlines()
+    DEFAULT_FROM_EMAIL = lines[0][:-1]
+    EMAIL_HOST = gethostbyname('smtp.gmail.com')
+    EMAIL_HOST_USER = DEFAULT_FROM_EMAIL
+    EMAIL_HOST_PASSWORD = lines[1][:-1]
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    MAIL_KEY= lines[2]
+
+#print(DEFAULT_FROM_EMAIL,EMAIL_HOST_PASSWORD,MAIL_KEY)

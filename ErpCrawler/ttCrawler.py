@@ -86,12 +86,18 @@ class TTcrawler(scrapy.Spider):
         table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdTimetable"]').extract_first()))[0]
         classes= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSubject"]').extract_first()))[0]
         classes=classes.iloc[-1,-3:-1].to_dict()
-        dictionary={}
-        count=0
-        for i in table.columns:
-            dictionary[count]={0:i,1:table[i].values[0]}
-            count+=1
+        
+        dicts={}
+        l=[]
+        for i in list(table.columns)[1:]:
+            print(i)
+            i=i.split('(')[1][:-1]
+            l.append(i)
 
-        self.returnJson.update({'schedule':dictionary,'classDetails':classes})
+        dicts['time']=dict(zip(range(len(l)),l)) 
+        dicts['subs']=dict(zip(range(len(table.columns)),table.iloc[0][2:]))
+        dicts['day']=table.iloc[0][0]
+
+        self.returnJson.update({'schedule':dicts,'classDetails':classes})
         
 
