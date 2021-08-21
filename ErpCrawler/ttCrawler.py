@@ -95,7 +95,7 @@ class TTcrawler(scrapy.Spider):
             l.append(i)
 
         dicts['time']=dict(zip(range(len(l)),l)) 
-        dicts['subs']=dict(zip(range(len(table.columns)),table.iloc[0][2:]))
+        dicts['subs']=dict(zip(range(len(table.columns)),table.iloc[0][1:]))
         dicts['day']=table.iloc[0][0]
 
         self.returnJson.update({'schedule':dicts,'classDetails':classes})
