@@ -1,20 +1,14 @@
-import base64
 from ErpCrawler import settings
 from ErpCrawler import ttCrawler
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseBadRequest,JsonResponse
+from django.http.response import HttpResponse, HttpResponseBadRequest
 from . import erpCrawler,ResCrawler
 from scrapyscript import Job,Processor
-import os
+import json
 import random
 from cryptography.fernet import Fernet
 from .helpers import EmailThread, encryptResp
 from django.views.decorators.csrf import csrf_exempt
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
-from ErpCrawler import helpers
-
 
 
 def runAttScraper(request: HttpRequest):
@@ -26,7 +20,7 @@ def runAttScraper(request: HttpRequest):
     getRes=Job(erpCrawler.ErpCrawler,u=u,p=p)
     process=Processor(settings=None)
     ans=process.run(getRes)
-    return JsonResponse(ans[0],safe=False)
+    return HttpResponse(json.dumps(ans))
 
 
 def runTTScraper(request: HttpRequest):
@@ -39,7 +33,7 @@ def runTTScraper(request: HttpRequest):
     process=Processor(settings=None)
     ans=process.run(getRes)
     
-    return JsonResponse(ans[0],safe=False)
+    return HttpResponse(json.dumps(ans))
 
 def runResScraper(request: HttpRequest):
     u=request.GET.get('username',False)
@@ -52,15 +46,14 @@ def runResScraper(request: HttpRequest):
     getRes=Job(ResCrawler.ResCrawler,u=u,p=p,s=s,c=c)
     process=Processor(settings=None)
     ans=process.run(getRes)
-    return JsonResponse(ans[0] if len(ans)>0 else ans,safe=False)
+    return HttpResponse(json.dump(ans))
 
 
 @csrf_exempt
 def sendMail(request: HttpResponse):
     mail=request.POST.get('mail',False)
     key=request.POST.get('key',False)
-    #password=request.POST.get('pass',False)
-    
+
     # print(mail,key)
     
     if(not mail or not key):
@@ -73,13 +66,12 @@ def sendMail(request: HttpResponse):
     msg=f'The Otp For Verification Of Your Email Is: {otp}'
     # print(msg)
     if(key!=settings.MAIL_KEY):
-        return JsonResponse({'error':'Wrong key'})
+        return HttpResponse('Wrong key')
     
     EmailThread("Otp For Verification",msg,[mail]).start()
+    #print(otp)
+    enc,dummy=encryptResp(otp,fuzzLen=9,dummyLen=6,dummy=True,onlyDigit=True)
 
-    password=Fernet.generate_key()
-    enc=encryptResp(password,otp)
-
-    frm={'encoded': f"{str(password,'utf-8')}{str(enc,'utf-8')}",'otp':f'{otp}'}
-    return JsonResponse(frm)
+    frm={'encoded':enc,'otpKey':f'{dummy}'}
+    return HttpResponse(json.dumps(frm))
 

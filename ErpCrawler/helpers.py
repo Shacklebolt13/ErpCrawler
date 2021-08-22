@@ -1,9 +1,5 @@
 import base64
-import os
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes
-
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import random,string
 import ErpCrawler.settings as settings
 import threading
 from django.core.mail import EmailMessage
@@ -23,16 +19,18 @@ class EmailThread(threading.Thread):
         print('sent')
 
 
-def encryptResp(password,otp):
-    
-    #salt = os.urandom(16)
-    # kdf = PBKDF2HMAC(
-    #     algorithm=hashes.SHA256(),
-    #     length=32,
-    #     salt=salt,
-    #     iterations=100000,
-    # )
-    # password=kdf.derive(password)
-    #key = base64.urlsafe_b64encode(password)
-    fernet=Fernet(password)
-    return fernet.encrypt(otp.encode())
+def encryptResp(data,fuzzLen,dummy=False,dummyLen=6,onlyDigit=False):
+    if(dummy):
+        fuzzTot=fuzzLen*2+dummyLen
+    else:
+        fuzzTOt=fuzzLen*2
+    extra=''.join(random.choices(string.digits + string.letters if(not onlyDigit) else [], k=fuzzTot))
+    data=extra[:fuzzLen]+data+extra[fuzzLen:fuzzLen*2]
+    data=base64.b64encode(data.encode())
+    data=str(data,'utf-8')
+    data=data.swapcase()[::-1]
+    if(dummy):
+        return (data,extra[fuzzLen*2:])
+    else:
+        return data
+
