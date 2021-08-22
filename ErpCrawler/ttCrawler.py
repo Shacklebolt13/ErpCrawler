@@ -83,20 +83,22 @@ class TTcrawler(scrapy.Spider):
 
 
     def attendanceDetails(self,response : HtmlResponse):
-        table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdTimetable"]').extract_first()))[0]
+        dicts={}
+        try:
+            table= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdTimetable"]').extract_first()))[0]
+            l=[]
+            for i in list(table.columns)[1:]:
+                print(i)
+                i=i.split('(')[1][:-1]
+                l.append(i)
+
+            dicts['time']=dict(zip(range(len(l)),l)) 
+            dicts['subs']=dict(zip(range(len(table.columns)),table.iloc[0][1:]))
+            dicts['day']=table.iloc[0][0]
+        except:
+            pass
         classes= pandas.read_html("".join(response.xpath(r'//*[@id="ctl00_cpStud_grdSubject"]').extract_first()))[0]
         classes=classes.iloc[-1,-3:-1].to_dict()
-        
-        dicts={}
-        l=[]
-        for i in list(table.columns)[1:]:
-            print(i)
-            i=i.split('(')[1][:-1]
-            l.append(i)
-
-        dicts['time']=dict(zip(range(len(l)),l)) 
-        dicts['subs']=dict(zip(range(len(table.columns)),table.iloc[0][2:]))
-        dicts['day']=table.iloc[0][0]
 
         self.returnJson.update({'schedule':dicts,'classDetails':classes})
         

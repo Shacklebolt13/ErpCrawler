@@ -102,6 +102,7 @@ class ErpCrawler(scrapy.Spider):
             
 
         print(response.meta)
+        print(type(self.returnJson))
         yield self.returnJson #IMPORTANT: to limit crawling to the attendance page
         #yield scrapy.FormRequest(method='GET',url=self.marksSite,callback=self.getMarks)
 

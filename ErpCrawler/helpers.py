@@ -1,3 +1,9 @@
+import base64
+import os
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import ErpCrawler.settings as settings
 import threading
 from django.core.mail import EmailMessage
@@ -15,3 +21,16 @@ class EmailThread(threading.Thread):
         print('sending mail to',self.recipient_list)
         msg.send()
         print('sent')
+
+
+def encryptResp(password,otp):
+    salt = os.urandom(16)
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password))
+    fernet=Fernet(key)
+    return fernet.encrypt(otp.encode())
