@@ -24,7 +24,8 @@ def encryptResp(data,fuzzLen,dummy=False,dummyLen=6,onlyDigit=False):
         fuzzTot=fuzzLen*2+dummyLen
     else:
         fuzzTOt=fuzzLen*2
-    extra=''.join(random.choices(string.digits + string.letters if(not onlyDigit) else [], k=fuzzTot))
+    choices= (string.ascii_letters + string.digits) if (not onlyDigit) else string.digits
+    extra=''.join(random.choices(choices, k=fuzzTot))
     data=extra[:fuzzLen]+data+extra[fuzzLen:fuzzLen*2]
     data=base64.b64encode(data.encode())
     data=str(data,'utf-8')
