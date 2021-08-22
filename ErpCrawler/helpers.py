@@ -24,13 +24,15 @@ class EmailThread(threading.Thread):
 
 
 def encryptResp(password,otp):
-    salt = os.urandom(16)
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=100000,
-    )
-    key = base64.urlsafe_b64encode(kdf.derive(password))
-    fernet=Fernet(key)
+    
+    #salt = os.urandom(16)
+    # kdf = PBKDF2HMAC(
+    #     algorithm=hashes.SHA256(),
+    #     length=32,
+    #     salt=salt,
+    #     iterations=100000,
+    # )
+    # password=kdf.derive(password)
+    #key = base64.urlsafe_b64encode(password)
+    fernet=Fernet(password)
     return fernet.encrypt(otp.encode())

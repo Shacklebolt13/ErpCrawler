@@ -59,7 +59,7 @@ def runResScraper(request: HttpRequest):
 def sendMail(request: HttpResponse):
     mail=request.POST.get('mail',False)
     key=request.POST.get('key',False)
-    password=request.POST.get('pass',False)
+    #password=request.POST.get('pass',False)
     
     # print(mail,key)
     
@@ -77,8 +77,9 @@ def sendMail(request: HttpResponse):
     
     EmailThread("Otp For Verification",msg,[mail]).start()
 
+    password=Fernet.generate_key()
     enc=encryptResp(password,otp)
-    
-    frm={'encoded': f"{str(key,'utf-8')}{str(enc,'utf-8')}",'otp':f'{otp}'}
+
+    frm={'encoded': f"{str(password,'utf-8')}{str(enc,'utf-8')}",'otp':f'{otp}'}
     return JsonResponse(frm)
 
