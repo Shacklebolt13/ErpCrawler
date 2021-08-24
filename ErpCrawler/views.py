@@ -9,7 +9,8 @@ import random
 from cryptography.fernet import Fernet
 from .helpers import EmailThread, encryptResp
 from django.views.decorators.csrf import csrf_exempt
-
+import datetime
+from . import emailpreview
 
 def runAttScraper(request: HttpRequest):
     u=request.GET.get('username',False)
@@ -63,12 +64,14 @@ def sendMail(request: HttpResponse):
     otp=''
     while len(otp)<6:
         otp+=f"{random.randint(0,9)}"
-    msg=f'The Otp For Verification Of Your Email Is: {otp}'
+    
+    #signature='GIETU Official App Team<br><img src="http://www.gandhionline.in/BEESERP/Images/header.jpg">'
+    #msg=f'Dated: {time} <br>The Otp For Verification Of Your Email Is: {otp} <br><br>{signature}'
     # print(msg)
     if(key!=settings.MAIL_KEY):
         return HttpResponse('Wrong key')
     
-    EmailThread("Otp For Verification",msg,[mail]).start()
+    EmailThread("Otp For Verification",emailpreview.message(otp,mail),[mail]).start()
     #print(otp)
     enc,dummy=encryptResp(otp,fuzzLen=9,dummyLen=6,dummy=True,onlyDigit=True)
 
