@@ -47,7 +47,7 @@ def runResScraper(request: HttpRequest):
     getRes=Job(ResCrawler.ResCrawler,u=u,p=p,s=s,c=c)
     process=Processor(settings=None)
     ans=process.run(getRes)
-    return HttpResponse(json.dump(ans))
+    return HttpResponse(json.dumps(ans))
 
 
 @csrf_exempt
