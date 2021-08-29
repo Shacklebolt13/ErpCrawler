@@ -5,7 +5,6 @@ from lxml import etree
 from requests.cookies import create_cookie
 
 def resultsCrawler(username,password,semester,cookies):
-    returnJson={}
 
     def handleNaN(table):
             for col in table.columns:
@@ -64,7 +63,7 @@ def resultsCrawler(username,password,semester,cookies):
             return data
 
 
-    url="http://www.gandhionline.in/BEESERP/Login.aspx"
+    
     urlRes='https://www.gandhionline.in/BEESERP/StudentLogin/Student/OverallMarksSemwise.aspx'
     session=requests.session()
     for k,v in cookies.items():
@@ -73,7 +72,7 @@ def resultsCrawler(username,password,semester,cookies):
     print('getting results page')
     resp=session.get(urlRes)
     data=getBasicData(resp)
-    data.update({'ctl00$cpStud$btn1': f'{roman(semester)} SEMESTER'})
+    data.update({f'ctl00$cpStud$btn{semester}': f'{roman(semester)} SEMESTER'})
     del resp
 
     print('getting results for sem',semester)
