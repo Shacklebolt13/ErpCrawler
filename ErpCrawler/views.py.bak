@@ -1,11 +1,15 @@
 from ErpCrawler import settings
+from ErpCrawler import ttCrawler
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
-from . import resultsCrawler,attendancePageCrawler,timeTableCrawler
+from . import erpCrawler,ResCrawler
+from scrapyscript import Job,Processor
 import json
 import random
+from cryptography.fernet import Fernet
 from .helpers import EmailThread, encryptResp
 from django.views.decorators.csrf import csrf_exempt
+import datetime
 from . import emailpreview
 
 def runAttScraper(request: HttpRequest):
@@ -14,7 +18,10 @@ def runAttScraper(request: HttpRequest):
     print(u,p)
     if((not u) or (not p)):
         return HttpResponseBadRequest("must pass username and password as get fields")
-    return HttpResponse(json.dumps(attendancePageCrawler.attendancePageCrawler(u,p)))
+    getRes=Job(erpCrawler.ErpCrawler,u=u,p=p)
+    process=Processor(settings=None)
+    ans=process.run(getRes)
+    return HttpResponse(json.dumps(ans))
 
 
 def runTTScraper(request: HttpRequest):
@@ -23,8 +30,11 @@ def runTTScraper(request: HttpRequest):
     print(u,p)
     if((not u) or (not p)):
         return HttpResponseBadRequest("must pass username and password as get fields")
+    getRes=Job(ttCrawler.TTcrawler,u=u,p=p)
+    process=Processor(settings=None)
+    ans=process.run(getRes)
     
-    return HttpResponse(json.dumps(timeTableCrawler.timeTableCrawler(u,p)))
+    return HttpResponse(json.dumps(ans))
 
 def runResScraper(request: HttpRequest):
     u=request.GET.get('username',False)
@@ -34,8 +44,10 @@ def runResScraper(request: HttpRequest):
     print(u,p,c,s)
     if((not s) or(not c) or(not u) or (not p)):
         return HttpResponseBadRequest("must pass username and password as get fields")
-    print(c)
-    return HttpResponse(json.dumps(resultsCrawler.resultsCrawler(u,p,s,dict(map(lambda x : x.split('='),c.split(';'))))))
+    getRes=Job(ResCrawler.ResCrawler,u=u,p=p,s=s,c=c)
+    process=Processor(settings=None)
+    ans=process.run(getRes)
+    return HttpResponse(json.dumps(ans))
 
 
 @csrf_exempt
