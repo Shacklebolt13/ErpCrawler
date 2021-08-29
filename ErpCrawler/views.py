@@ -14,7 +14,7 @@ def runAttScraper(request: HttpRequest):
     print(u,p)
     if((not u) or (not p)):
         return HttpResponseBadRequest("must pass username and password as get fields")
-    return HttpResponse(json.dumps(attendancePageCrawler.attendancePageCrawler(u,p)))
+    return HttpResponse(json.dumps([attendancePageCrawler.attendancePageCrawler(u,p)]))
 
 
 def runTTScraper(request: HttpRequest):
@@ -24,7 +24,7 @@ def runTTScraper(request: HttpRequest):
     if((not u) or (not p)):
         return HttpResponseBadRequest("must pass username and password as get fields")
     
-    return HttpResponse(json.dumps(timeTableCrawler.timeTableCrawler(u,p)))
+    return HttpResponse(json.dumps([timeTableCrawler.timeTableCrawler(u,p)]))
 
 def runResScraper(request: HttpRequest):
     u=request.GET.get('username',False)
@@ -35,7 +35,7 @@ def runResScraper(request: HttpRequest):
     if((not s) or(not c) or(not u) or (not p)):
         return HttpResponseBadRequest("must pass username and password as get fields")
     print(c)
-    return HttpResponse(json.dumps(resultsCrawler.resultsCrawler(u,p,s,dict(map(lambda x : x.split('='),c.split(';'))))))
+    return HttpResponse(json.dumps([resultsCrawler.resultsCrawler(u,p,s,dict(map(lambda x : x.split('='),c.split(';'))))]))
 
 
 @csrf_exempt
