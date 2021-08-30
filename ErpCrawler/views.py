@@ -1,7 +1,7 @@
 from ErpCrawler import settings
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest
-from . import resultsCrawler,attendancePageCrawler,timeTableCrawler
+from . import resultsCrawler,attendancePageCrawler,timeTableCrawler,bioCrawler
 import json
 import random
 from .helpers import EmailThread, encryptResp
@@ -25,6 +25,17 @@ def runTTScraper(request: HttpRequest):
         return HttpResponseBadRequest("must pass username and password as get fields")
     
     return HttpResponse(json.dumps([timeTableCrawler.timeTableCrawler(u,p)]))
+
+
+
+def runBioScraper(request: HttpRequest):
+    u=request.GET.get('username',False)
+    p=request.GET.get('password',False)
+    print(u,p)
+    if((not u) or (not p)):
+        return HttpResponseBadRequest("must pass username and password as get fields")
+    
+    return HttpResponse(json.dumps([bioCrawler.bioCrawler(u,p)]))
 
 def runResScraper(request: HttpRequest):
     u=request.GET.get('username',False)

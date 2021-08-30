@@ -22,5 +22,6 @@ urlpatterns = [
     path('getAttrecords',views.runAttScraper),
     path('getResrecords',views.runResScraper),
     path('getTTrecords',views.runTTScraper),
+    path('getBiorecords',views.runBioScraper),
     path('sendmail',views.sendMail)
 ]
