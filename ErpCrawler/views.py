@@ -31,11 +31,12 @@ def runTTScraper(request: HttpRequest):
 def runBioScraper(request: HttpRequest):
     u=request.GET.get('username',False)
     p=request.GET.get('password',False)
+    t=request.GET.get('type','dict')
     print(u,p)
     if((not u) or (not p)):
         return HttpResponseBadRequest("must pass username and password as get fields")
     
-    return HttpResponse(json.dumps([bioCrawler.bioCrawler(u,p)]))
+    return HttpResponse(json.dumps([bioCrawler.bioCrawler(u,p,t)]))
 
 def runResScraper(request: HttpRequest):
     u=request.GET.get('username',False)

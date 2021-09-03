@@ -3,7 +3,7 @@ import lxml.html as html
 import pandas
 from lxml import etree
 
-def bioCrawler(username,password):
+def bioCrawler(username,password,type='dict'):
     returnJson={}
 
     def handleNaN(table):
@@ -62,7 +62,9 @@ def bioCrawler(username,password):
         'Full Correspondence Address': tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabCommunicationDet_txtMergeCorAddress"]')[0].value.replace('\r',"").replace('\n',""),
         'Full Permanent Addr': tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabCommunicationDet_txtMergePerAddress"]')[0].value.replace('\r',"").replace('\n',""),
         }
-        returnJson.update({'keys':list(data.keys()),'vals':list(data.values())})
+        
+        returnJson.update(data if(type=='dict') else ({'keys':list(data.keys()),'vals':list(data.values())}))
+        
          
 
 
