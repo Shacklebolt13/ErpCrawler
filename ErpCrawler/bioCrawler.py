@@ -123,6 +123,7 @@ def bioCrawler(username,password,type='dict'):
     
     resp=session.get(bioUrl)
     bioDetails(resp)
+    returnJson['cookie']=session.cookies.get_dict()
     print("crawling complete")
 
     return returnJson
