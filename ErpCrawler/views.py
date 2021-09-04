@@ -36,7 +36,7 @@ def runBioScraper(request: HttpRequest):
     if((not u) or (not p)):
         return HttpResponseBadRequest("must pass username and password as get fields")
     
-    return HttpResponse(json.dumps([bioCrawler.bioCrawler(u,p,t)]))
+    return HttpResponse(json.dumps(bioCrawler.bioCrawler(u,p,t)))
 
 def runResScraper(request: HttpRequest):
     u=request.GET.get('username',False)
