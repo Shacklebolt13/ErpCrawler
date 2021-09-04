@@ -61,8 +61,9 @@ def bioCrawler(username,password,type='dict'):
         'Student\'s Alt. Email' : tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabCommunicationDet_txtStuAlterEmail"]')[0].value,
         'Full Correspondence Address': tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabCommunicationDet_txtMergeCorAddress"]')[0].value.replace('\r',"").replace('\n',""),
         'Full Permanent Addr': tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabCommunicationDet_txtMergePerAddress"]')[0].value.replace('\r',"").replace('\n',""),
+        'Dp' : f'''www.gandhionline.in/BEESERP/StudentLogin/Student/{tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabAdmissionDet_ImgStu"]/@src')[0]}''',
+        'sign' : f'''www.gandhionline.in/BEESERP/StudentLogin/Student/{tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabAdmissionDet_ImgSign"]/@src')[0]}'''
         }
-        
         returnJson.update(data if(type=='dict') else ({'keys':list(data.keys()),'vals':list(data.values())}))
         
          
