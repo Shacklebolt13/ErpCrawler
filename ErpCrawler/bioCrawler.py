@@ -2,6 +2,8 @@ import requests
 import lxml.html as html
 import pandas
 from lxml import etree
+from io import BytesIO
+import base64
 
 def bioCrawler(username,password,type='dict'):
     returnJson={}
@@ -62,7 +64,7 @@ def bioCrawler(username,password,type='dict'):
         'Full Correspondence Address': tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabCommunicationDet_txtMergeCorAddress"]')[0].value.replace('\r',"").replace('\n',""),
         'Full Permanent Addr': tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabCommunicationDet_txtMergePerAddress"]')[0].value.replace('\r',"").replace('\n',""),
         'Dp' : f'''www.gandhionline.in/BEESERP/StudentLogin/Student/{tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabAdmissionDet_ImgStu"]/@src')[0]}''',
-        'sign' : f'''www.gandhionline.in/BEESERP/StudentLogin/Student/{tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabAdmissionDet_ImgSign"]/@src')[0]}'''
+        #'sign' : f'''www.gandhionline.in/BEESERP/StudentLogin/Student/{tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabAdmissionDet_ImgSign"]/@src')[0]}'''
         }
         returnJson.update(data if(type=='dict') else ({'keys':list(data.keys()),'vals':list(data.values())}))
         
@@ -124,6 +126,9 @@ def bioCrawler(username,password,type='dict'):
     resp=session.get(bioUrl)
     bioDetails(resp)
     returnJson['cookie']=session.cookies.get_dict()
+    print("getting image")
+    resp=session.get('http://'+returnJson['Dp'])
+    returnJson['Dp']=str(base64.b64encode(resp.content),'utf-8')
     print("crawling complete")
 
     return returnJson

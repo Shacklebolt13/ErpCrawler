@@ -25,14 +25,17 @@ def resultsCrawler(username,password,semester,cookies):
         table.drop(['Unnamed: 7','Unnamed: 8','Unnamed: 9'],axis=1,inplace=True)
         table=handleNaN(table)
                 
-       
-        sgpa=etree.tostring(tree.xpath(r'//*[@id="ctl00_cpStud_lblSemSGPA"]')[0],pretty_print=True)
-        
-        sgpa=(sgpa.split(b"</font>")[-2]).split(b" ")[-1]
-    
-        cgpa=etree.tostring(tree.xpath(r'//*[@id="ctl00_cpStud_lblSemCGPA"]')[0],pretty_print=True)
-        cgpa=(cgpa.split(b"</font>")[-2]).split(b" ")[-1]
-        
+        try:
+            sgpa=etree.tostring(tree.xpath(r'//*[@id="ctl00_cpStud_lblSemSGPA"]')[0],pretty_print=True)
+            sgpa=(sgpa.split(b"</font>")[-2]).split(b" ")[-1]
+        except:
+            sgpa=b""
+
+        try:
+            cgpa=etree.tostring(tree.xpath(r'//*[@id="ctl00_cpStud_lblSemCGPA"]')[0],pretty_print=True)
+            cgpa=(cgpa.split(b"</font>")[-2]).split(b" ")[-1]
+        except:
+            cgpa=b""    
         return {'CGPA':str(cgpa,'utf-8'),'SGPA':str(sgpa,'utf-8'),'details':table.to_dict()}
        
 
