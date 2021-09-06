@@ -23,5 +23,6 @@ urlpatterns = [
     path('getResrecords',views.runResScraper),
     path('getTTrecords',views.runTTScraper),
     path('getBiorecords',views.runBioScraper),
-    path('sendmail',views.sendMail)
+    path('sendmail',views.sendMail),
+    path('getDprecords',views.runDpScraper),
 ]
