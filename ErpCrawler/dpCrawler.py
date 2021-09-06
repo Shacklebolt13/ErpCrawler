@@ -24,7 +24,10 @@ def dpCrawler(username,password):
             return data
 
     def dpDetails(resp,session):
-        tree=html.fromstring(resp.text).xpath(r'//*[@id="ctl00_cpHeader_ucStud_ImgStudPic"]/@src')[0]
+        tree=html.fromstring(resp.text)
+        att=tree.xpath(r'//*[@id="ctl00_cpStud_lblTotalPercentage"]')[0].text_content()
+        returnJson.update({'totalAtt':att})
+        tree=tree.xpath(r'//*[@id="ctl00_cpHeader_ucStud_ImgStudPic"]/@src')[0]
         resp=session.get('http://www.gandhionline.in/BEESERP/'+tree)
         returnJson['Dp']=str(base64.b64encode(resp.content),'utf-8')
 
