@@ -42,12 +42,18 @@ def dpCrawler(username,password):
     del resp
     print('putting username: '+ username)
     resp=session.post(url,data)
+    if(b"txtUserName" in resp.content):
+            print("WRONG USERNAME ",username)
+            return([]) #WRONG USERNAME
 
     del data
     data=getBasicData(resp)
     data.update({'txtPassword' : password,'btnSubmit' : "Submit"})
     print('putting password: ',password)
     resp=session.post(url,data)
+    if(b"txtPassword" in resp.content):
+            print("WRONG PASSWORD ",password," for ",username)
+            return([]) #WRONG PASSWORD
     print("crawling")
 
     dpDetails(resp, session)

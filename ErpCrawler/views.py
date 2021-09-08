@@ -14,7 +14,8 @@ def runAttScraper(request: HttpRequest):
     print(u,p)
     if((not u) or (not p)):
         return HttpResponseBadRequest("must pass username and password as get fields")
-    return HttpResponse(json.dumps([attendancePageCrawler.attendancePageCrawler(u,p)]))
+    a=attendancePageCrawler.attendancePageCrawler(u,p)
+    return HttpResponse(json.dumps( a if  isinstance(a,list) else [a]))
 
 
 def runDpScraper(request: HttpRequest):
