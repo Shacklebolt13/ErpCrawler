@@ -1,0 +1,9 @@
+{
+    "NUC" : "New User Created",
+    "FEU" : "Found Existing User",
+    "UPS" : "User Update Successful",
+    "UNF" : "User Not Found",
+    "MDR" : "Missing Data in Request",
+    "PSS" : "Practice Submit Successful"
+
+} 
