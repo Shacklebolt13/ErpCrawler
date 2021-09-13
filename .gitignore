@@ -5,4 +5,4 @@ __pycache__
 */__pycache__
 .*/
 *.ipynb
-db.sqlite3
+*/db.sqlite3
