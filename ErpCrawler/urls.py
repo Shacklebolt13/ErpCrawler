@@ -17,7 +17,7 @@ from django.urls import path
 from django.urls.conf import include
 from django.contrib import admin
 from . import views
-
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 
 urlpatterns = [
@@ -29,4 +29,4 @@ urlpatterns = [
     path('sendmail',views.sendMail),
     path('getDprecords',views.runDpScraper),
     path('quiz/',include('quiz.urls'))
-]
+]+staticfiles_urlpatterns()
