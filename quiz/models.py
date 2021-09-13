@@ -9,7 +9,7 @@ class User(models.Model):
     image=models.CharField(max_length=10000,default="")
     
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name}" if len(self.name)>0 else f"{self.uid}"
 
 
 class DailyScore(models.Model):
