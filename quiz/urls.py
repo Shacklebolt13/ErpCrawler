@@ -8,4 +8,5 @@ urlpatterns = [
     path('updateUser',views.update,name='update'),
     path('practiceSubmit',views.practiceSubmit,name='psubmit'),
     path('practiceLeaderboard',views.getLeaderBoard,name='pleaderboard'),
+    path('practiceQuestions',views.getQuestion,name='pquest'),
     ]
