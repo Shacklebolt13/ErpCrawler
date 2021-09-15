@@ -4,7 +4,7 @@ import uuid
 
 
 class User(models.Model):
-    uid=models.UUIDField(default=uuid.uuid4,unique=True,blank=False,primary_key=True)
+    uid=models.CharField(max_length=200,unique=True,blank=False,primary_key=True)
     name=models.CharField(max_length=100,default="")
     image=models.CharField(max_length=10000,default="")
     
