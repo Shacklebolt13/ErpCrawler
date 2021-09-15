@@ -33,3 +33,13 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question
+
+class Tries(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    tries=models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name_plural="Tries"
+
+    def __str__(self):
+        return f"{self.user} has tried {self.tries} today"

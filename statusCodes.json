@@ -6,6 +6,6 @@
     "MDR" : "Missing Data in Request",
     "PSS" : "Practice Submit Successful",
     "AST" : "Already Submitted Today",
-    "ATA" : "Allowed To Appear"
-
+    "ATA" : "Allowed To Appear",
+    "MRR" : "Max Retries Reached"
 } 
