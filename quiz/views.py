@@ -60,6 +60,10 @@ def getLeaderBoard(request :HttpRequest):
 @csrf_exempt
 def getQuestion(request: HttpRequest):
     uid=request.POST.get('uid',None)
-    if(DailyScore.objects.filter(user=uid).exists()):
+    user=User.objects.filter(uid=uid)
+    if(not user.exists()):
+        return JsonResponse({'status':'UNF'})
+    if(DailyScore.objects.filter(user=user[0]).exists()):
         return JsonResponse({'status':'AST'})
     return JsonResponse({'questions':[{"index": 1, "question": "How to delete a directory in Linux?", "option_a": "ls", "option_b": "delete", "option_c": "remove", "option_d": "rmdir", "answer": "delete"}]*10,'status':'ATA '})
+	
