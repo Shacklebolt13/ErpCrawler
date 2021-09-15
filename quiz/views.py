@@ -1,4 +1,3 @@
-from django.http.response import HttpResponse
 from .models import DailyScore, User
 from django.http import HttpRequest,JsonResponse,HttpResponseBadRequest,HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -61,6 +60,6 @@ def getLeaderBoard(request :HttpRequest):
 
 def getQuestion(request: HttpRequest):
     uid=request.GET.get('uid',None)
-    if(DailyScore.objects.exists(User=uid)):
+    if(DailyScore.objects.filter(user=uid).exists()):
         return JsonResponse({'status':'AST'})
     return JsonResponse({'questions':[{"index": 1, "question": "How to delete a directory in Linux?", "option_a": "ls", "option_b": "delete", "option_c": "remove", "option_d": "rmdir", "answer": "delete"}]*10,'status':'ATA '})
