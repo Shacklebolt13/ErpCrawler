@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'quiz.apps.QuizConfig',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,7 @@ with open('creds.txt','r') as file:
     MAIL_KEY= lines[2]
 
 #print(DEFAULT_FROM_EMAIL,EMAIL_HOST_PASSWORD,MAIL_KEY)
+
+CRONJOBS = [
+    ('1 0 * * *', 'quiz.cron.refreshdailyLeaderboard')
+]
