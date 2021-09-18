@@ -3,6 +3,7 @@ certifi==2021.5.30
 chardet==3.0.4
 cssselect==1.1.0
 Django==3.2.6
+django-crontab==0.7.1
 gunicorn==20.1.0
 idna==2.6
 lxml==4.6.3
