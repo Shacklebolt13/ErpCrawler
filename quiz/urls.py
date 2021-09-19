@@ -9,4 +9,5 @@ urlpatterns = [
     path('practiceSubmit',views.practiceSubmit,name='psubmit'),
     path('practiceLeaderboard',views.getLeaderBoard,name='pleaderboard'),
     path('practiceQuestions',views.getQuestion,name='pquest'),
+    path('uploadQuestions',views.uploadQuestions,name='uploadQ'),
     ]

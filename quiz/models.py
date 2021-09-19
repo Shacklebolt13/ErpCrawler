@@ -1,4 +1,5 @@
 from django.db import models
+from pandas.core.algorithms import mode
 # Create your models here.
 
 
@@ -29,8 +30,8 @@ class Question(models.Model):
     opt2=models.CharField(max_length=500)
     opt3=models.CharField(max_length=500)
     opt4=models.CharField(max_length=500)
-    answer=models.IntegerField(choices=((1,"OPT1"),(2,"OPT2"),(3,"OPT3"),(4,"OPT4")))
-
+    answer=models.CharField(max_length=500)
+    addedOn=models.DateTimeField(auto_now_add=True,blank=True)
     def __str__(self):
         return self.question
 

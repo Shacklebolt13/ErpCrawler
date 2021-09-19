@@ -1,4 +1,4 @@
-from .models import DailyScore, Tries, User
+from .models import DailyScore, Question, Tries, User
 from django.http import HttpRequest,JsonResponse,HttpResponseBadRequest,HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -76,3 +76,33 @@ def getQuestion(request: HttpRequest):
 
     return JsonResponse({'questions':[{"index": 1, "question": "How to delete a directory in Linux?", "option_a": "ls", "option_b": "delete", "option_c": "remove", "option_d": "rmdir", "answer": "delete"}]*10,'status':'ATA '})
 	
+
+@csrf_exempt
+def uploadQuestions(request :HttpRequest):
+    def parseQuestions(row):
+        q,o1,o2,o3,o4,ans=row
+        question,created=Question.objects.get_or_create(question=q,opt1=o1,opt2=o2,opt3=o3,opt4=o4,answer=ans)
+        if(not created):
+            message.append('ignored existing question '+q)
+
+    
+    file=request.FILES.get('questionsCSV',False)
+    message=[]
+    if file==False:
+        return JsonResponse({'status':'NFU'})
+    elif not file.name.strip().endswith("csv"):
+        return JsonResponse({'status':'BFE'})
+    
+    import pandas
+    df=pandas.read_csv(file)
+    try:
+        df.apply(parseQuestions,axis=1) 
+        message={'status':'QUS'} if len(message)==0 else {'status':'QUS','messages':message}
+        return JsonResponse(message)
+    except Exception as e:
+        return JsonResponse({'status':'ERR','error':str(e)})
+
+
+    
+    
+    
