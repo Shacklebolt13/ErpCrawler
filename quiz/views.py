@@ -73,8 +73,19 @@ def getQuestion(request: HttpRequest):
     
     triesObj.tries=triesObj.tries+1
     triesObj.save()
-
-    return JsonResponse({'questions':[{"index": 1, "question": "How to delete a directory in Linux?", "option_a": "ls", "option_b": "delete", "option_c": "remove", "option_d": "rmdir", "answer": "delete"}]*10,'status':'ATA '})
+    questions=Question.objects.order_by('?')[:10]
+    qdictlist=[]
+    for q in questions:
+        qdictlist.append({"index": q.id,
+         "question": q.question,
+          "option_a": q.opt1, 
+          "option_b": q.opt2, 
+          "option_c": q.opt3, 
+          "option_d": q.opt4,
+          "answer": q.answer
+          })
+    
+    return JsonResponse({'questions':qdictlist,'status':'ATA '})
 	
 
 @csrf_exempt

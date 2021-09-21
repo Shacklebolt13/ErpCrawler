@@ -6,3 +6,5 @@ __pycache__
 .*/
 *.ipynb
 db.sqlite3
+schedules
+schedules/*

@@ -19,10 +19,10 @@ def resultsCrawler(username,password,semester,cookies):
     def semesterResultDetails(response):
         tree=html.fromstring(response.text)
         table= pandas.read_html(etree.tostring(tree.xpath(r'//*[@id="ctl00_cpStud_grdSemwise"]')[0],pretty_print=True))[0]
-        table['FinalGrade']=table['Unnamed: 7']
-        table['Credits']=table['Unnamed: 8']
-        table['Status']=table['Unnamed: 9']
-        table.drop(['Unnamed: 7','Unnamed: 8','Unnamed: 9'],axis=1,inplace=True)
+        #table['FinalGrade']=table['Unnamed: 7']
+        #table['Credits']=table['Unnamed: 8']
+        #table['Status']=table['Unnamed: 9']
+        #table.drop(['Unnamed: 7','Unnamed: 8','Unnamed: 9'],axis=1,inplace=True)
         table=handleNaN(table)
                 
         try:
@@ -51,12 +51,13 @@ def resultsCrawler(username,password,semester,cookies):
 
     def getBasicData(response):
             data={}
+            print(response.text)
             tree=html.fromstring(response.text)
             __VIEWSTATEGENERATOR=tree.cssselect('input[name="__VIEWSTATEGENERATOR"]')[0].value
-            __EVENTVALIDATION=tree.cssselect('input[name="__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1"]')[0].value
+            #__EVENTVALIDATION=tree.cssselect('input[name="__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1"]')[0].value
             __VIEWSTATE=tree.cssselect('input[name="__VIEWSTATE"]')[0].value
             data={'__VIEWSTATEGENERATOR' : __VIEWSTATEGENERATOR,
-                    '__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1' : __EVENTVALIDATION,
+                    #'__CRYSTALSTATEctl00$cpStud$CrystalReportViewer1' : __EVENTVALIDATION,
                     '__VIEWSTATE' : __VIEWSTATE,
                     '__LASTFOCUS' : "",
                     '__EVENTTARGET' : "",
