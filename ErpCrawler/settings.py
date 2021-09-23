@@ -127,7 +127,7 @@ print(STATIC_ROOT)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-with open('creds.txt','r') as file:
+with open(str(BASE_DIR)+'/creds.txt','r') as file:
     lines=file.readlines()
     DEFAULT_FROM_EMAIL = lines[0][:-1]
     EMAIL_HOST = gethostbyname('smtp.gmail.com')
@@ -140,5 +140,5 @@ with open('creds.txt','r') as file:
 #print(DEFAULT_FROM_EMAIL,EMAIL_HOST_PASSWORD,MAIL_KEY)
 
 CRONJOBS = [
-    ('1 0 * * *', 'quiz.cron.refreshdailyLeaderboard')
+    ('1 0 * * *', 'quiz.cron.refresh')
 ]
