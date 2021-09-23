@@ -53,9 +53,14 @@ def practiceSubmit(request :HttpRequest):
 
 
 def getLeaderBoard(request :HttpRequest):
-
+    def f(x):
+        nonlocal i
+        i+=1
+        return {'index': i ,'name':x.user.name,'image':x.user.image,'totalPoints':x.totalPoints,'timeTaken':x.timeTaken}
+    
+    i=0
     l=DailyScore.objects.all()[:10]
-    return JsonResponse([{'name':x.user.name,'image':x.user.image,'totalPoints':x.totalPoints,'timeTaken':x.timeTaken} for x in l],safe=False)
+    return JsonResponse([ f(x) for x in l],safe=False)
 
 @csrf_exempt
 def getQuestion(request: HttpRequest):
