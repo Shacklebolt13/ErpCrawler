@@ -102,15 +102,19 @@ def uploadQuestions(request :HttpRequest):
             message.append('ignored existing question '+q)
 
     
-    file=request.FILES.get('questionsCSV',False)
+    file=request.FILES.get('questionsFile',False)
     message=[]
     if file==False:
         return JsonResponse({'status':'NFU'})
-    elif not file.name.strip().endswith("csv"):
+    elif file.name.strip().endswith("csv"):
+        xlsx=False
+    elif file.name.strip().endswith("xlsx"):
+        xlsx=True
+    else:
         return JsonResponse({'status':'BFE'})
     
     import pandas
-    df=pandas.read_csv(file)
+    df=pandas.read_csv(file) if not xlsx else pandas.read_excel(file)
     try:
         df.apply(parseQuestions,axis=1) 
         message={'status':'QUS'} if len(message)==0 else {'status':'QUS','messages':message}
