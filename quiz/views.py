@@ -157,7 +157,8 @@ def getSponsoredQuestion(request: HttpRequest):
     
     triesObj.tries=triesObj.tries+1
     triesObj.save()
-    questions=SponsoredQuestions.objects.get(id=sid).question_set.all()
+    sponsorObject=SponsoredQuestions.objects.get(id=sid)
+    questions=sponsorObject.question_set.all()
     qdictlist=[]
     for q in questions:
         qdictlist.append({"index": q.id,
@@ -169,7 +170,8 @@ def getSponsoredQuestion(request: HttpRequest):
           #"answer": q.answer
           })
     
-    return JsonResponse({'questions':qdictlist,'status':'ATA '})
+    return JsonResponse({'questions':qdictlist,'status':'ATA','time':sponsorObject.timePeriod,'name':sponsorObject.name})
+
 	
 
 
