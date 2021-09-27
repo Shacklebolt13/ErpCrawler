@@ -24,6 +24,59 @@ class DailyScore(models.Model):
         ordering = ['-totalPoints','timeTaken']
 
 
+class PracticeQuestions(models.Model):
+    
+    class Meta:
+        verbose_name_plural="Practice Branch"
+
+    branch=models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.branch
+
+
+
+class SponsoredQuestions(models.Model):
+    class Meta:
+        verbose_name_plural="Sponsored Details"
+
+    branch=models.CharField(max_length=10)
+    name=models.CharField(max_length=64)
+    timePeriod=models.IntegerField(default=60)
+
+    
+    def __str__(self):
+        return f"{self.name} exam ({self.branch}) for {self.timePeriod} mins"
+
+   
+    
+class SponsoredScoreboard(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    totalPoints=models.IntegerField(default=0)
+    timeTaken=models.FloatField(default=0)
+    sponsor=models.ForeignKey(SponsoredQuestions,on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f"{self.user.name} scored {self.totalPoints} in {self.timeTaken} seconds"
+    
+    class Meta:
+        ordering = ['-totalPoints','timeTaken']
+
+
+class SponsoredAttempts(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    tries=models.IntegerField(default=0)
+    sponsor=models.ForeignKey(SponsoredQuestions,on_delete=models.DO_NOTHING)
+
+    class Meta:
+        verbose_name_plural="Sponsored Tries"
+
+    def __str__(self):
+        return f"{self.user} has tried {self.tries} times today"
+
+
+
+
 class Question(models.Model):
     question=models.CharField(max_length=1000)
     opt1=models.CharField(max_length=500)
@@ -32,6 +85,9 @@ class Question(models.Model):
     opt4=models.CharField(max_length=500)
     answer=models.CharField(max_length=500)
     addedOn=models.DateTimeField(auto_now_add=True,blank=True)
+    practiceBranch=models.ForeignKey(PracticeQuestions,null=True,on_delete=models.RESTRICT)
+    sponsorship=models.ForeignKey(SponsoredQuestions,null=True,on_delete=models.RESTRICT)
+
     def __str__(self):
         return self.question
 
@@ -43,4 +99,4 @@ class Tries(models.Model):
         verbose_name_plural="Tries"
 
     def __str__(self):
-        return f"{self.user} has tried {self.tries} today"
+        return f"{self.user} has tried {self.tries} times today"

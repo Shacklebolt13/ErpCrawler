@@ -1,4 +1,4 @@
-from .models import DailyScore, Question, Tries, User
+from .models import DailyScore, PracticeQuestions, Question, SponsoredAttempts, SponsoredQuestions, SponsoredScoreboard, Tries, User
 from django.http import HttpRequest,JsonResponse,HttpResponseBadRequest,HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -38,6 +38,7 @@ def practiceSubmit(request :HttpRequest):
     total=request.POST.get('total',False)
     time=request.POST.get('time',False)
 
+    print(uid,total,time)
     if(not all((uid,total,time))):
         return HttpResponseBadRequest({'status':'MDR'})
     user=User.objects.get(uid=uid)
@@ -62,10 +63,22 @@ def getLeaderBoard(request :HttpRequest):
     l=DailyScore.objects.all()[:10]
     return JsonResponse([ f(x) for x in l],safe=False)
 
+
+
+def sponsoredLeaderBoard(request :HttpRequest):
+    def f(x):
+        nonlocal i
+        i+=1
+        return {'index': i ,'name':x.user.name,'image':x.user.image,'totalPoints':x.totalPoints,'timeTaken':x.timeTaken}
+    
+    i=0
+    l=SponsoredScoreboard.objects.all()[:10]
+    return JsonResponse([ f(x) for x in l],safe=False)
+
 @csrf_exempt
 def getQuestion(request: HttpRequest):
     uid=request.POST.get('uid',None)
-    
+    bid=request.POST.get('bid',1)
     user=User.objects.filter(uid=uid)
     if(not user.exists()):
         return JsonResponse({'status':'UNF'})
@@ -78,7 +91,7 @@ def getQuestion(request: HttpRequest):
     
     triesObj.tries=triesObj.tries+1
     triesObj.save()
-    questions=Question.objects.order_by('?')[:10]
+    questions= PracticeQuestions.objects.get(id=bid).question_set.order_by('?')[:10]
     qdictlist=[]
     for q in questions:
         qdictlist.append({"index": q.id,
@@ -124,5 +137,37 @@ def uploadQuestions(request :HttpRequest):
 
 
     
+
+@csrf_exempt
+def getSponsoredQuestion(request: HttpRequest):
+    uid=request.GET.get('uid',None)
+    sid=int(request.POST.get('sid',1))
     
+    user=User.objects.filter(uid=uid)
     
+    if(not user.exists()):
+        return JsonResponse({'status':'UNF'})
+    if(SponsoredScoreboard.objects.filter(user=user[0],sponsor_id=sid).exists()):
+        return JsonResponse({'status':'AST'})
+    
+    triesObj,created=SponsoredAttempts.objects.get_or_create(user=user[0],sponsor_id=sid)
+    
+    if(triesObj.tries>2):
+        return JsonResponse({'status':'MRR'})
+    
+    triesObj.tries=triesObj.tries+1
+    triesObj.save()
+    questions=SponsoredQuestions.objects.get(id=sid).question_set.order_by('?')[:30]
+    qdictlist=[]
+    for q in questions:
+        qdictlist.append({"index": q.id,
+         "question": q.question,
+          "option_a": q.opt1, 
+          "option_b": q.opt2, 
+          "option_c": q.opt3, 
+          "option_d": q.opt4,
+          #"answer": q.answer
+          })
+    
+    return JsonResponse({'questions':qdictlist,'status':'ATA '})
+	
