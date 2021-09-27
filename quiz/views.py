@@ -171,3 +171,29 @@ def getSponsoredQuestion(request: HttpRequest):
     
     return JsonResponse({'questions':qdictlist,'status':'ATA '})
 	
+
+
+@csrf_exempt
+def sponsoredSubmit(request :HttpRequest):
+    with open('file','w+') as f:
+        f.write('\n'*4)
+        json.dump(request.POST,f)
+        f.close()
+
+
+    uid=request.POST.get('uid',False)
+    total=request.POST.get('total',False)
+    time=request.POST.get('time',False)
+
+    print(uid,total,time)
+    if(not all((uid,total,time))):
+        return HttpResponseBadRequest({'status':'MDR'})
+    user=User.objects.get(uid=uid)
+    if(not user):
+        return JsonResponse({'status':'UNF'})
+    try:
+        score=DailyScore.objects.create(user=user,totalPoints=total,timeTaken=time)
+    except:
+        return JsonResponse({'status':'AST'})
+
+    return JsonResponse({'status':'PSS'})
