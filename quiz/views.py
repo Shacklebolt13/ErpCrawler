@@ -140,7 +140,7 @@ def uploadQuestions(request :HttpRequest):
 
 @csrf_exempt
 def getSponsoredQuestion(request: HttpRequest):
-    uid=request.GET.get('uid',None)
+    uid=request.POST.get('uid',None)
     sid=int(request.POST.get('sid',1))
     
     user=User.objects.filter(uid=uid)
@@ -157,7 +157,7 @@ def getSponsoredQuestion(request: HttpRequest):
     
     triesObj.tries=triesObj.tries+1
     triesObj.save()
-    questions=SponsoredQuestions.objects.get(id=sid).question_set.order_by('?')[:30]
+    questions=SponsoredQuestions.objects.get(id=sid).question_set.all()
     qdictlist=[]
     for q in questions:
         qdictlist.append({"index": q.id,
