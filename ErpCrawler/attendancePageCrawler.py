@@ -24,10 +24,14 @@ def attendancePageCrawler(username,password):
         table=handleNaN(table)
         att={'Total':att,'Details':table.to_dict()}
         del table
-        table2= pandas.read_html(etree.tostring(tree.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]')[0],pretty_print=True))[0]
-        table2=table2.to_html()
-        att['Daywise']=table2.replace("\n","")
-        del table2
+        try:
+            table2= pandas.read_html(etree.tostring(tree.xpath(r'//*[@id="ctl00_cpStud_grdDaywise"]')[0],pretty_print=True))[0]
+            table2=table2.to_html()
+            att['Daywise']=table2.replace("\n","")
+            del table2
+        except:
+            att['Daywise']="<html><body>NOT AVAILABLE DUE TO TECHNICAL REASONS</body></html>"
+        
         del tree
         returnJson.update({'attendance':att})
 
