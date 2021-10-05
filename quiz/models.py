@@ -1,12 +1,14 @@
 from django.db import models
 from pandas.core.algorithms import mode
+import base64
 # Create your models here.
+defImg= base64.b64encode(open('quiz/static/quiz/defImg.jpg','rb').read()).decode()
 
 
 class User(models.Model):
     uid=models.CharField(max_length=200,unique=True,blank=False,primary_key=True)
     name=models.CharField(max_length=100,default="")
-    image=models.CharField(max_length=10000,default="")
+    image=models.CharField(max_length=100000,default=defImg,null=True)
     
     def __str__(self):
         return f"{self.name}" if len(self.name)>0 else f"{self.uid}"
