@@ -11,5 +11,7 @@
     "BFE" : "Bad File Extension",
     "NFU" : "No File Uploaded",
     "ERA" : "Error (see attatched data) Report to Admin",
-    "QUS" : "Questions Uploaded Successfully"
+    "QUS" : "Questions Uploaded Successfully",
+    "NSY" : "Not Started Yet",
+    "FIN" : "Exam Has Finished"
 } 

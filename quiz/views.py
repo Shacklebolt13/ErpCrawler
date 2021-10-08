@@ -2,7 +2,11 @@ from .models import DailyScore, PracticeQuestions, Question, SponsoredAttempts, 
 from django.http import HttpRequest,JsonResponse,HttpResponseBadRequest,HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.shortcuts import get_object_or_404
+
 # Create your views here.
+
+
 @csrf_exempt
 def goc(request :HttpRequest):
     uid=request.POST.get('uid',False) 
@@ -10,6 +14,8 @@ def goc(request :HttpRequest):
         return HttpResponseBadRequest({'status':'MDR'})
     user,created=User.objects.get_or_create(uid=uid)
     if(created):
+        user.name=request.POST.get('name',"")
+        user.roll=request.POST.get('roll',"")
         user.save()
         return JsonResponse({'status':'NUC'})
     else:
@@ -18,19 +24,33 @@ def goc(request :HttpRequest):
         tmp.pop('_state')
         return JsonResponse(tmp)
 
+
+
 @csrf_exempt
 def update(request :HttpRequest):
+
     uid=request.POST.get('uid',False) 
     name=request.POST.get('name',False)
     image=request.POST.get('img',False)
+    name=request.POST.get('name',False)
+    roll=request.POST.get('roll',False)
+
     if(all((uid,name,image))):
         user=User.objects.get(uid=uid)
         user.name=name
         user.image=image
+
+        if(roll):
+            user.roll=roll
+        if(name):
+            user.name=name
         user.save()
+
         return JsonResponse({'status':'UPS'})
     else:
         return HttpResponseBadRequest(json.dumps({'status':'MDR'}))
+
+
 
 @csrf_exempt
 def practiceSubmit(request :HttpRequest):
@@ -75,6 +95,8 @@ def sponsoredLeaderBoard(request :HttpRequest):
     l=SponsoredScoreboard.objects.all()[:10]
     return JsonResponse([ f(x) for x in l],safe=False)
 
+
+
 @csrf_exempt
 def getQuestion(request: HttpRequest):
     uid=request.POST.get('uid',None)
@@ -105,6 +127,7 @@ def getQuestion(request: HttpRequest):
     
     return JsonResponse({'questions':qdictlist,'status':'ATA '})
 	
+
 
 @csrf_exempt
 def uploadQuestions(request :HttpRequest):
@@ -138,28 +161,44 @@ def uploadQuestions(request :HttpRequest):
 
     
 
+
 @csrf_exempt
 def getSponsoredQuestion(request: HttpRequest):
+
     uid=request.POST.get('uid',None)
-    sid=int(request.POST.get('sid',1))
+    exCode=request.POST.get('code','')
     
+    from datetime import datetime
+
     user=User.objects.filter(uid=uid)
+
+    print(dir(SponsoredQuestions.objects.all()[0]))
+
+    sponsorObject=get_object_or_404(SponsoredQuestions,examCode=exCode)
     
     if(not user.exists()):
         return JsonResponse({'status':'UNF'})
-    if(SponsoredScoreboard.objects.filter(user=user[0],sponsor_id=sid).exists()):
+
+    if(sponsorObject.startTime.timestamp()>datetime.now().timestamp()):
+        return JsonResponse({'status':'NSY','startTime':sponsorObject.startTime.timestamp()//1})
+    
+    # if(sponsorObject.endTime.timestamp()<datetime.now().timestamp()):
+    #     return JsonResponse({'status':'FIN','endTime':sponsorObject.endTime.timestamp()//1})
+
+    if(SponsoredScoreboard.objects.filter(user=user[0],sponsor_id=sponsorObject.id).exists()):
         return JsonResponse({'status':'AST'})
     
-    triesObj,created=SponsoredAttempts.objects.get_or_create(user=user[0],sponsor_id=sid)
+    triesObj,created=SponsoredAttempts.objects.get_or_create(user=user[0],sponsor_id=sponsorObject.id)
     
     if(triesObj.tries>2):
         return JsonResponse({'status':'MRR'})
     
     triesObj.tries=triesObj.tries+1
     triesObj.save()
-    sponsorObject=SponsoredQuestions.objects.get(id=sid)
+    
     questions=sponsorObject.question_set.all()
     qdictlist=[]
+
     for q in questions:
         qdictlist.append({"index": q.id,
          "question": q.question,
@@ -170,14 +209,25 @@ def getSponsoredQuestion(request: HttpRequest):
           #"answer": q.answer
           })
     
-    return JsonResponse({'questions':qdictlist,'status':'ATA','time':sponsorObject.timePeriod,'name':sponsorObject.name})
+    return JsonResponse({'questions':qdictlist,
+            'status':'ATA',
+            'starttime':sponsorObject.startTime.timestamp()//1,
+            'endtime':sponsorObject.endTime.timestamp()//1,
+            'name':sponsorObject.name,
+            'branch':sponsorObject.branch,
+            'examCode':sponsorObject.examCode,
+            })
 
 	
 
 
+
 @csrf_exempt
 def sponsoredSubmit(request :HttpRequest):
-    with open('file','w+') as f:
+
+    from ErpCrawler.settings import BASE_DIR
+
+    with open(str(BASE_DIR)+'/submitTest','w+') as f:
         f.write('\n'*4)
         json.dump(request.POST,f)
         f.close()
@@ -185,14 +235,24 @@ def sponsoredSubmit(request :HttpRequest):
 
     uid=request.POST.get('uid',False)
     total=request.POST.get('total',False)
+    branch=request.POST.get('branch',False)
+    section=request.POST.get('section',False)
+    year=request.POST.get('year',False)
+    exCode=request.POST.get('code',False)
+    
     time=request.POST.get('time',False)
 
     print(uid,total,time)
+
     if(not all((uid,total,time))):
         return HttpResponseBadRequest({'status':'MDR'})
+
+
     user=User.objects.get(uid=uid)
+
     if(not user):
         return JsonResponse({'status':'UNF'})
+
     try:
         score=DailyScore.objects.create(user=user,totalPoints=total,timeTaken=time)
     except:
