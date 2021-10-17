@@ -30,7 +30,6 @@ def goc(request :HttpRequest):
 def update(request :HttpRequest):
 
     uid=request.POST.get('uid',False) 
-    name=request.POST.get('name',False)
     image=request.POST.get('img',False)
     name=request.POST.get('name',False)
     roll=request.POST.get('roll',False)
@@ -173,6 +172,7 @@ def getSponsoredQuestion(request: HttpRequest):
     user=User.objects.filter(uid=uid)
 
     print(dir(SponsoredQuestions.objects.all()[0]))
+    print(exCode)
 
     sponsorObject=get_object_or_404(SponsoredQuestions,examCode=exCode)
     
@@ -211,8 +211,8 @@ def getSponsoredQuestion(request: HttpRequest):
     
     return JsonResponse({'questions':qdictlist,
             'status':'ATA',
-            'starttime':sponsorObject.startTime.timestamp()//1,
-            'endtime':sponsorObject.endTime.timestamp()//1,
+            'starttime':str(sponsorObject.startTime.timestamp()),
+            'endtime':str(sponsorObject.endTime.timestamp()),
             'name':sponsorObject.name,
             'branch':sponsorObject.branch,
             'examCode':sponsorObject.examCode,
