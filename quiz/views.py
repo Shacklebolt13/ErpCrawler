@@ -174,7 +174,11 @@ def getSponsoredQuestion(request: HttpRequest):
     print(dir(SponsoredQuestions.objects.all()[0]))
     print(exCode)
 
-    sponsorObject=get_object_or_404(SponsoredQuestions,examCode=exCode)
+    sponsorObject=SponsoredQuestions.objects.filter(examCode=exCode)
+    if(sponsorObject):
+        sponsorObject=sponsorObject[0]
+    else:
+        return JsonResponse({'status':'ENF'})
     
     if(not user.exists()):
         return JsonResponse({'status':'UNF'})
