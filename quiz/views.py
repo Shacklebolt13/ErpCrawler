@@ -184,10 +184,10 @@ def getSponsoredQuestion(request: HttpRequest):
         return JsonResponse({'status':'UNF'})
 
     if(sponsorObject.startTime.timestamp()>datetime.now().timestamp()):
-        return JsonResponse({'status':'NSY','startTime':sponsorObject.startTime.timestamp()//1})
+        return JsonResponse({'status':'NSY','startTime':str(sponsorObject.startTime.timestamp()//1)})
     
     if(sponsorObject.endTime.timestamp()<datetime.now().timestamp()):
-        return JsonResponse({'status':'FIN','endTime':sponsorObject.endTime.timestamp()//1})
+        return JsonResponse({'status':'FIN','endTime':str(sponsorObject.endTime.timestamp()//1)})
 
     if(SponsoredScoreboard.objects.filter(user=user[0],sponsor_id=sponsorObject.id).exists()):
         return JsonResponse({'status':'AST'})
