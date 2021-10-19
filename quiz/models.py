@@ -1,9 +1,9 @@
 from django.db import models
-from pandas.core.algorithms import mode
 import base64
+from ErpCrawler.settings import BASE_DIR
 
 # Create your models here.
-defImg= base64.b64encode(open('quiz/static/quiz/defImg.jpg','rb').read()).decode()
+defImg= base64.b64encode(open(str(BASE_DIR)+'/quiz/static/quiz/defImg.jpg','rb').read()).decode()
 
 
 class User(models.Model):
@@ -66,7 +66,7 @@ class SponsoredScoreboard(models.Model):
     section=models.CharField(max_length=5,null=True)
     year=models.IntegerField(default=19)
     sponsor=models.ForeignKey(SponsoredQuestions,on_delete=models.DO_NOTHING)
-
+    semester=models.IntegerField(default=0)
     def __str__(self):
         return f"{self.user.name} scored {self.totalPoints} "
     

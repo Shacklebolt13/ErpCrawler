@@ -3,6 +3,7 @@ from django.http import HttpRequest,JsonResponse,HttpResponseBadRequest,HttpResp
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.shortcuts import get_object_or_404
+from datetime import datetime
 
 # Create your views here.
 
@@ -167,7 +168,6 @@ def getSponsoredQuestion(request: HttpRequest):
     uid=request.POST.get('uid',None)
     exCode=request.POST.get('code','')
     
-    from datetime import datetime
 
     user=User.objects.filter(uid=uid)
 
@@ -229,37 +229,55 @@ def getSponsoredQuestion(request: HttpRequest):
 @csrf_exempt
 def sponsoredSubmit(request :HttpRequest):
 
-    from ErpCrawler.settings import BASE_DIR
 
-    with open(str(BASE_DIR)+'/submitTest','w+') as f:
-        f.write('\n'*4)
-        json.dump(request.POST,f)
-        f.close()
-
-
+    test="""{"uid": "EtwQFItLT1bQERhkyl2P8QPEtF93", "answer": "{22=null, 44=null, 66=null, 45=null, 89=null, 25=c, 29=null, 70=null, 50=b, 51=a, 30=null, 31=null, 75=null, 32=null, 33=a, 34=null, 78=null, 13=null, 35=null, 1=a, 100=null, 8=null, 81=null, 82=null, 40=null, 62=c, 63=c, 42=null, 64=c, 87=null}", "batch": "2019", "section": "F", "semester": "5", "examcode": "CSETESTS", "branch": "CSE"}"""
+    extraMins=5
     uid=request.POST.get('uid',False)
-    total=request.POST.get('total',False)
     branch=request.POST.get('branch',False)
+    batch=request.POST.get('batch',False)
     section=request.POST.get('section',False)
-    year=request.POST.get('year',False)
-    exCode=request.POST.get('code',False)
+    semester=request.POST.get('semester',False)
+    exCode=request.POST.get('examcode',False)
+    answer=request.POST.get('answer',False)
+
+    if( not all((branch,batch,section,semester,exCode,answer)) ):
+         return HttpResponseBadRequest({'status':'MDR'})
     
-    time=request.POST.get('time',False)
+    user=get_object_or_404(User,pk=uid)
+    exam=get_object_or_404(SponsoredQuestions,examCode=exCode)
 
-    print(uid,total,time)
-
-    if(not all((uid,total,time))):
-        return HttpResponseBadRequest({'status':'MDR'})
-
-
-    user=User.objects.get(uid=uid)
-
-    if(not user):
-        return JsonResponse({'status':'UNF'})
-
-    try:
-        score=DailyScore.objects.create(user=user,totalPoints=total,timeTaken=time)
-    except:
+    if(SponsoredScoreboard.objects.filter(user=user,sponsor=exam).exists()):
         return JsonResponse({'status':'AST'})
 
-    return JsonResponse({'status':'PSS'})
+    if(datetime.now().timestamp()>(exam.endTime.timestamp()+(extraMins*60))):
+        return JsonResponse({'status':'FIN','endtime':str(exam.endTime.timestamp()//1)})
+    
+    elif(datetime.now().timestamp()<(exam.startTime.timestamp())):
+        return JsonResponse({'status':'NSY','starttime':str(exam.startTime.timestamp()//1)})
+
+    answer=dict([ kv.split('=') for kv in answer.replace('{','').replace('}','').split(',')  ])
+    
+    points=0
+    print(answer,type(answer))
+
+    for id,ans in answer.items():
+        q=Question.objects.get(pk=id)
+
+        if(ans=='a'):
+            if(q.answer==q.opt1):
+                points+=1
+
+        elif(ans=='b'):
+            if(q.answer==q.opt2):
+                points+=1
+
+        elif(ans=='c'):
+            if(q.answer==q.opt3):
+                points+=1
+
+        elif(ans=='d'):
+            if(q.answer==q.opt4):
+                points+=1
+    SponsoredScoreboard(user=user,branch=branch,year=batch,section=section,semester=semester,sponsor=exam,totalPoints=points).save()
+    return JsonResponse({'status':'PSS'}) 
+
