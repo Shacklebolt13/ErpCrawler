@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import tree
 from pandas.core.algorithms import mode
 import base64
 

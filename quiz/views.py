@@ -30,7 +30,6 @@ def goc(request :HttpRequest):
 def update(request :HttpRequest):
 
     uid=request.POST.get('uid',False) 
-    name=request.POST.get('name',False)
     image=request.POST.get('img',False)
     name=request.POST.get('name',False)
     roll=request.POST.get('roll',False)
@@ -173,17 +172,22 @@ def getSponsoredQuestion(request: HttpRequest):
     user=User.objects.filter(uid=uid)
 
     print(dir(SponsoredQuestions.objects.all()[0]))
+    print(exCode)
 
-    sponsorObject=get_object_or_404(SponsoredQuestions,examCode=exCode)
+    sponsorObject=SponsoredQuestions.objects.filter(examCode=exCode)
+    if(sponsorObject):
+        sponsorObject=sponsorObject[0]
+    else:
+        return JsonResponse({'status':'ENF'})
     
     if(not user.exists()):
         return JsonResponse({'status':'UNF'})
 
     if(sponsorObject.startTime.timestamp()>datetime.now().timestamp()):
-        return JsonResponse({'status':'NSY','startTime':sponsorObject.startTime.timestamp()//1})
+        return JsonResponse({'status':'NSY','starttime':str(sponsorObject.startTime.timestamp()//1)})
     
-    # if(sponsorObject.endTime.timestamp()<datetime.now().timestamp()):
-    #     return JsonResponse({'status':'FIN','endTime':sponsorObject.endTime.timestamp()//1})
+    if(sponsorObject.endTime.timestamp()<datetime.now().timestamp()):
+        return JsonResponse({'status':'FIN','endtime':str(sponsorObject.endTime.timestamp()//1)})
 
     if(SponsoredScoreboard.objects.filter(user=user[0],sponsor_id=sponsorObject.id).exists()):
         return JsonResponse({'status':'AST'})
@@ -211,8 +215,8 @@ def getSponsoredQuestion(request: HttpRequest):
     
     return JsonResponse({'questions':qdictlist,
             'status':'ATA',
-            'starttime':sponsorObject.startTime.timestamp()//1,
-            'endtime':sponsorObject.endTime.timestamp()//1,
+            'starttime':str(sponsorObject.startTime.timestamp()),
+            'endtime':str(sponsorObject.endTime.timestamp()),
             'name':sponsorObject.name,
             'branch':sponsorObject.branch,
             'examCode':sponsorObject.examCode,

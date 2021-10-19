@@ -3,6 +3,7 @@
     "FEU" : "Found Existing User",
     "UPS" : "User Update Successful",
     "UNF" : "User Not Found",
+    "ENF" : "Exam Not Found",
     "MDR" : "Missing Data in Request",
     "PSS" : "Practice Submit Successful",
     "AST" : "Already Submitted Today",

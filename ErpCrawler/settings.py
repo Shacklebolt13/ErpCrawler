@@ -115,6 +115,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+TIME_ZONE = 'Asia/Calcutta'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -130,7 +132,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 with open(str(BASE_DIR)+'/creds.txt','r') as file:
     lines=file.readlines()
     DEFAULT_FROM_EMAIL = lines[0][:-1]
-    EMAIL_HOST = gethostbyname('smtp.gmail.com')
+    EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_HOST_USER = DEFAULT_FROM_EMAIL
     EMAIL_HOST_PASSWORD = lines[1][:-1]
     EMAIL_PORT = 587
