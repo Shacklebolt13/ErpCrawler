@@ -132,10 +132,27 @@ def getQuestion(request: HttpRequest):
 @csrf_exempt
 def uploadQuestions(request :HttpRequest):
     def parseQuestions(row):
-        q,o1,o2,o3,o4,ans=row
+        q,o1,o2,o3,o4,ans,sponsor,practice=row
+        sponsor = SponsoredQuestions.objects.filter(examCode=sponsor.strip())
+        practice = PracticeQuestions.objects.filter(branch=practice.strip())
+
+       
+
+        print([x.id for x in Question.objects.filter(question=q,opt1=o1,opt2=o2,opt3=o3,opt4=o4,answer=ans)])
         question,created=Question.objects.get_or_create(question=q,opt1=o1,opt2=o2,opt3=o3,opt4=o4,answer=ans)
+       
+        if(sponsor.exists()):
+            sponsor=sponsor[0]
+            question.sponsorship=sponsor
+        
+        if(practice.exists()):
+            practice=practice[0]
+            question.practiceBranch=practice
+        
+        question.save()
         if(not created):
             message.append('ignored existing question '+q)
+            
 
     
     file=request.FILES.get('questionsFile',False)
