@@ -1,7 +1,77 @@
+import numpy
 import requests
 import lxml.html as html
 import pandas
 from lxml import etree
+def testdata():
+    return pandas.DataFrame({
+    "SlNo":{
+        "0":1.0,
+        "1":2.0,
+        "2":3.0,
+        "3":4.0,
+        "4":5.0,
+        "5":6.0,
+        "6":8.0,
+        "7":9.0,
+        "8":10.0
+    },
+    "Subject":{
+        "0":"UNAVAILABLE",
+        "1":"UNAVAILABLE",
+        "2":"UNAVAILABLE",
+        "3":"UNAVAILABLE",
+        "4":"UNAVAILABLE",
+        "5":"UNAVAILABLE",
+        "6":"UNAVAILABLE",
+        "7":"UNAVAILABLE",
+        "8":"UNAVAILABLE"
+    },
+    "Faculty":{
+        "0":"UNAVAILABLE",
+        "1":"UNAVAILABLE",
+        "2":"UNAVAILABLE",
+        "3":"UNAVAILABLE",
+        "4":"UNAVAILABLE",
+        "5":"UNAVAILABLE",
+        "6":"UNAVAILABLE",
+        "7":"UNAVAILABLE",
+        "8":"UNAVAILABLE"
+    },
+    "Classes Held":{
+        "0":0,
+        "1":0,
+        "2":0,
+        "3":0,
+        "4":0,
+        "5":0,
+        "6":0,
+        "7":0,
+        "8":0
+    },
+    "Classes Attended":{
+        "0":0,
+        "1":0,
+        "2":0,
+        "3":0,
+        "4":0,
+        "5":0,
+        "6":0,
+        "7":0,
+        "8":0
+    },
+    "Att %":{
+        "0":0,
+        "1":0,
+        "2":0,
+        "3":0,
+        "4":0,
+        "5":0,
+        "6":0,
+        "7":0,
+        "8":0
+    }
+    })
 
 def attendancePageCrawler(username,password):
     returnJson={'cookie':[]}
@@ -22,6 +92,12 @@ def attendancePageCrawler(username,password):
         att=table.iloc[-1,-1]
         table.drop(table.tail(1).index,inplace=True,axis=0)
         table=handleNaN(table)
+        if(att==numpy.NaN):
+            att=0
+
+        if(table.shape[0]==0):
+            table=testdata()
+
         att={'Total':att,'Details':table.to_dict()}
         del table
         try:

@@ -1,3 +1,4 @@
+import numpy
 import requests
 import lxml.html as html
 import pandas
@@ -5,7 +6,7 @@ from lxml import etree
 from io import BytesIO
 import base64
 
-def bioCrawler(username,password,type='dict'):
+def bioCrawler(username,password,types='dict'):
     returnJson={}
 
     def handleNaN(table):
@@ -66,7 +67,7 @@ def bioCrawler(username,password,type='dict'):
         'Dp' : f'''www.gandhionline.in/BEESERP/StudentLogin/Student/{tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabAdmissionDet_ImgStu"]/@src')[0]}''',
         #'sign' : f'''www.gandhionline.in/BEESERP/StudentLogin/Student/{tree.xpath(r'//*[@id="ctl00_cpStud_TabContainerStudMast_TabAdmissionDet_ImgSign"]/@src')[0]}'''
         }
-        returnJson.update(data if(type=='dict') else ({'keys':list(data.keys()),'vals':list(data.values())}))
+        returnJson.update(data if(types=='dict') else ({'keys':list(data.keys()),'vals':list(data.values())}))
         
          
 
@@ -77,6 +78,10 @@ def bioCrawler(username,password,type='dict'):
         att=table.iloc[-1,-1]
         table.drop(table.tail(1).index,inplace=True,axis=0)
         table=handleNaN(table)
+        try:
+            int(att)
+        except:
+            att=0
         att={'Attendance':att}
         del table
         del tree
