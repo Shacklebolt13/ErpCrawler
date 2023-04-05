@@ -1,0 +1,21 @@
+version: "3.3"
+services:
+  web:
+    build: .
+    image: api
+    command: "python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app/
+    env_file:
+      - .env
+
+  migrations:
+    build: .
+    image: migrations
+    command: "python manage.py migrate --noinput"
+    volumes:
+      - .:/app/
+    depends_on:
+      - web
