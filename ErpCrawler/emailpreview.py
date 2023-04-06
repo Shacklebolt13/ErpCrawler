@@ -1,5 +1,6 @@
-def message(otp,mail):
-    return  """
+def message(otp, mail):
+    return (
+        """
     <!doctype html>
 <html>
 
@@ -263,7 +264,9 @@ def message(otp,mail):
         Hi there,
     
 </h2>
-                        <p style="color: #666666; font-weight: 400; font-size: 18px; line-height: 21px; font-family: 'Helvetica neue', Helvetica, arial, sans-serif; " class="">Thanks For Installing the Application, Enter this OTP on the app to complete the<b><font color="BLACK"> Registration </font> </b> process for """+mail+                        """</p>
+                        <p style="color: #666666; font-weight: 400; font-size: 18px; line-height: 21px; font-family: 'Helvetica neue', Helvetica, arial, sans-serif; " class="">Thanks For Installing the Application, Enter this OTP on the app to complete the<b><font color="BLACK"> Registration </font> </b> process for """
+        + mail
+        + """</p>
                         <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 12px; margin-bottom: 12px; margin: 24px 0">
                           <tr>
                             <td>
@@ -274,7 +277,9 @@ def message(otp,mail):
                                       class="btn">
                                       
                                       <span style="padding-left: 5px; padding-right: 5px;"><b>
-                               """+otp+"""</b>
+                               """
+        + otp
+        + """</b>
                             </span>
 
                                     </a>
@@ -364,3 +369,4 @@ def message(otp,mail):
 
 </html>
     """
+    )

@@ -29,7 +29,7 @@ class AttCrawler:
         response = AttCrawler.fetchAtt(username, sem)
         data = response.json()["dataAttendance"]
         df = pd.DataFrame.from_records(data)
-        data = {"summary": df.copy().to_html().replace("\n","")}
+        data = {"summary": df.copy().to_html().replace("\n", "")}
         df.drop("AttendanceDate", axis=1, inplace=True)
         # replace all 0/0 with 0
         df = df.replace("0/0", "0")

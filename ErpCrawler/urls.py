@@ -21,12 +21,12 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('getAttrecords',views.runAttScraper),
-    path('getResrecords',views.runResScraper),
-    path('getTTrecords',views.runTTScraper),
-    path('getBiorecords',views.runBioScraper),
-    path('sendmail',views.sendMail),
-    path('getDprecords',views.runDpScraper),
-    path('quiz/',include('quiz.urls'))
-]+staticfiles_urlpatterns()
+    path("admin/", admin.site.urls),
+    path("getAttrecords", views.runAttScraper),
+    path("getResrecords", views.runResScraper),
+    path("getTTrecords", views.runTTScraper),
+    path("getBiorecords", views.runBioScraper),
+    path("sendmail", views.sendMail),
+    path("getDprecords", views.runDpScraper),
+    path("quiz/", include("quiz.urls")),
+] + staticfiles_urlpatterns()
