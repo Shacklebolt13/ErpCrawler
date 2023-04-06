@@ -150,7 +150,7 @@ def getQuestion(request: HttpRequest):
 def uploadQuestions(request: HttpRequest):
     def parseQuestions(row):
         q, o1, o2, o3, o4, ans, sponsor, practice = row
-        sponsor = SponsoredQuestions.objects.filter(examCode=str(sponsor).strip()
+        sponsor = SponsoredQuestions.objects.filter(examCode=str(sponsor).strip())
         practice = PracticeQuestions.objects.filter(branch=str(practice).strip())
 
         print(
