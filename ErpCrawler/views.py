@@ -22,7 +22,7 @@ def runAttScraper(request: HttpRequest):
 
     if not u:
         return HttpResponseBadRequest("must pass username as get fields")
-    a = attCrawler.AttCrawler.getAtt(attCrawler.AttCrawler.fetchAtt(u, -1))
+    a = attCrawler.AttCrawler.getAtt(u, -1)
     return HttpResponse(a)
 
 
